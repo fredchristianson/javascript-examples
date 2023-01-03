@@ -1,0 +1,23 @@
+{
+  "name": "javascript-examples",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fredchristianson/javascript-examples.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fredchristianson/javascript-examples/issues"
+  },
+  "homepage": "https://github.com/fredchristianson/javascript-examples#readme"
+}
