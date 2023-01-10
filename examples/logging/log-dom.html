@@ -1,0 +1,67 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="../common/css/style.css" />
+    <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+    <div id="example">
+        <div id="buttons">
+
+        </div>
+        <div id="explanation">
+            <p>This page is like <a href='index.html'>index.html</a> but has an element where log messages are writing.
+            </p>
+            <p>You can view the output messages in the javascript console and the element.</p>
+            <p>This element can be put anywhere on the page and manipulated like any other (e.g. hide, size, etc) </p>
+            <pre>
+                &lt;div id=&quot;LOG-CONTAINER&quot;&gt&lt/div&gt; 
+            </pre>
+            This simple script sets up console and DOM logging
+            <pre>
+                &lt;script type=&quot;module&quot;&gt; 
+                    import { Logger } from &quot;../common/log/logger.js&quot;;
+                    const log = new Logger(&quot;Application&quot;); 
+                    log.debug(`this is a debug message `);
+                &lt;/script&gt;
+                </pre>
+            You can see more logging functionality on these pages
+            <ul class="links">
+                <li><a href='index.html'>index.html</a><span class='description'>simple console.</span>
+                </li>
+                <li><a href='log-destinations.html'>log-destinations.html</a><span class='description'>console, DOM,
+                        etc.</span>
+                </li>
+            </ul>
+        </div>
+        <div id="module">
+            <p>Move and click the mouse here to see log messages. press the buttons at top of page to change log level.</p>
+            <p>The module "./mouse-module.js" logs movements and clicks at different levels.</p>
+            <pre>
+                import {MouseModule} from "./mouse-module.js";
+                new MouseModule("module");
+            </pre>
+        </div>
+        <div id="LOG-CONTAINER"></div>
+    </div>
+</body>
+
+<script type="module">
+    import { Logger, LogLevel } from "../common/log/logger.js";
+    const log = new Logger("Application", LogLevel.DEBUG);
+    var cnt = 0;
+    log.debug(`this is a debug message ${cnt++}`);
+    log.info(`this is a info message ${cnt++}`);
+    log.warn(`this is a warn message ${cnt++}`);
+    log.error(`this is a error message ${cnt++}`);
+    log.always(`this is a always message ${cnt++}`);
+    log.never(`this is a never message ${cnt++}`);
+
+    import { MouseModule } from "./mouse-module.js";
+    const mouseModule = new MouseModule("module");
+
+
+</script>
+
+</html>

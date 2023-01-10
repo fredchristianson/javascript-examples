@@ -1,0 +1,32 @@
+<html>
+
+<link rel="stylesheet" href="../common/css/style.css" />
+<link rel="stylesheet" href="./style.css"/>
+</style>
+
+<body>
+    <p>This page contains a script to demonstrate javascript modules and a logger.js module. </p>
+    <p>You can view the output messages in the javascript console.</p>
+    <pre>
+    &lt;script type=&quot;module&quot;&gt; 
+        import { Logger } from &quot;../common/log/logger.js&quot;;
+        const log = new Logger(&quot;Application&quot;); 
+        log.debug(`this is a debug message `);
+    &lt;/script&gt;
+    </pre>
+    You can see more logging functionality on these pages
+    <ul class="links">
+        <li><a href='log-dom.html'>log-dom.html</a><span class='description'>View log in page.</span></li>
+        <li><a href='log-destinations.html'>log-destinations.html</a><span class='description'>console, DOM, etc.</span></li>
+        <li><a href='log-format.html'>log-format.html</a><span class='description'>Format log output.</span></li>
+    </ul>
+</body>
+
+<script type="module">
+    import { Logger} from "../common/log/logger.js";
+    const log = new Logger("Application");
+    log.debug(`this is a debug message `);
+
+</script>
+
+</html>

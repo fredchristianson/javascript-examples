@@ -15,7 +15,7 @@
                 id="form-focusin">no focusin/out event</span></div>
         <fieldset id="group-1">
             <legend>Group 1 - <span class="status" id="group-1-focus">no focus/blur event</span> - <span class="status"
-                id="group-1-focusin">no focusin/out event</span></legend>
+                    id="group-1-focusin">no focusin/out event</span></legend>
             <div><label>Input 1-1</label><span class="status" id="input-1-1-focus">no focus/blur event</span> - <span
                     class="status" id="input-1-1-focusin">no focusin/out event</span> </div>
             <div><label>Input 1-2</label><span class="status" id="input-1-2-focus">no focu/blurs event</span> - <span
@@ -24,8 +24,9 @@
             <input id="input-1-2" />
         </fieldset>
         <fieldset id="group-2">
-            <legend>Group 2 - <span class="status" id="group-2-focus">no focus/blur event</span> - <span class="status" id="group-2-focusin">no focusin/out
-                event</span></legend>
+            <legend>Group 2 - <span class="status" id="group-2-focus">no focus/blur event</span> - <span class="status"
+                    id="group-2-focusin">no focusin/out
+                    event</span></legend>
             <div><label>Input 2-1</label><span class="status" id="input-2-1-focus">no focus/blur event</span> - <span
                     class="status" id="input-2-1-focusin">no focus event</span></div>
             <div><label>Input 2-2</label><span class="status" id="input-2-2-focus">no focus/blur event</span> - <span
@@ -42,12 +43,14 @@
     const formFocusinStatus = document.getElementById("form-focusin");
     form.addEventListener("focus", () => { formFocusStatus.innerHTML = "focus"; });
     form.addEventListener("blur", () => { formFocusStatus.innerHTML = "blur"; });
-    form.addEventListener("focusin", () => { formFocusinStatus.innerHTML = "focusin"; });
-    form.addEventListener("focusout", () => { formFocusinStatus.innerHTML = "focusout"; });
+    form.addEventListener("focusin", () => { 
+        formFocusinStatus.innerHTML = "focusin"; });
+    form.addEventListener("focusout", () => { 
+        formFocusinStatus.innerHTML = "focusout"; });
 
     const group1 = document.getElementById("group-1");
-        const group1FocusStatus = document.getElementById("group-1-focus");
-        const group1FocusinStatus = document.getElementById("group-1-focusin");
+    const group1FocusStatus = document.getElementById("group-1-focus");
+    const group1FocusinStatus = document.getElementById("group-1-focusin");
     group1.addEventListener("focus", () => { alert("group should not get focus event."); });
     group1.addEventListener("blur", () => { alert("group should not get blur event."); });
     group1.addEventListener("focusin", () => { group1FocusinStatus.innerHTML = "focusin"; });
@@ -73,14 +76,14 @@
 
 
 
-        const group2 = document.getElementById("group-2");
-        const group2FocusStatus = document.getElementById("group-2-focus");
-        const group2FocusinStatus = document.getElementById("group-2-focusin");
-        group2.addEventListener("focus", () => { alert("group should not get focus event."); });
-        group2.addEventListener("blur", () => { alert("group should not get blur event."); });
-        group2.addEventListener("focusin", () => { group2FocusinStatus.innerHTML = "focusin"; });
-        group2.addEventListener("focusout", () => { group2FocusinStatus.innerHTML = "focusout"; });
-    
+    const group2 = document.getElementById("group-2");
+    const group2FocusStatus = document.getElementById("group-2-focus");
+    const group2FocusinStatus = document.getElementById("group-2-focusin");
+    group2.addEventListener("focus", () => { alert("group should not get focus event."); });
+    group2.addEventListener("blur", () => { alert("group should not get blur event."); });
+    group2.addEventListener("focusin", () => { group2FocusinStatus.innerHTML = "focusin"; });
+    group2.addEventListener("focusout", () => { group2FocusinStatus.innerHTML = "focusout"; });
+
 
 
     const input2_1 = document.getElementById("input-2-1");

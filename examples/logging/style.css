@@ -1,0 +1,83 @@
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    #example {
+        overflow: hidden;
+        height: 100vh;
+        display: grid;
+        grid-template-areas:
+            "buttons log"
+            "explanation log"
+            "module log";
+        grid-template-columns: 50% 1fr;
+        grid-template-rows: 32px 1fr 300px;
+    }
+
+    #buttons {
+        grid-area: buttons;
+    }
+
+    button.highlight {
+        background-color: #ffff00;
+    }
+
+    #explanation {
+        grid-area: explanation;
+        height: 100%;
+        overflow: auto;
+    }
+
+
+    #module {
+        grid-area: module;
+        background-color: #7777ff;
+    }
+
+    #LOG-CONTAINER {
+        grid-area: log;
+        border-left: 1px solid black;
+        padding: 2em;
+        overflow: auto;
+    }
+
+    #log1,
+    #log2 {
+        height: 45%;
+        overflow: auto;
+    }
+
+    #log1 {
+        border: 1px solid #ffff00;
+    }
+
+    #log2 {
+        margin-top: 2em;
+        border: 1px solid #ff0000;
+    }
+
+    .log {
+        font-family: monospace;
+        white-space: pre;
+    }
+
+    .log.DEBUG {
+        color: #aaaaaa;
+    }
+
+    .log.INFO {
+        color: #777777;
+    }
+
+    .log.WARN {
+        color: #cc7777;
+    }
+
+    .log.ERROR {
+        color: #aa4444;
+    }
+
+    .log.ALWAYS {
+        color: #aaaa00;
+    }

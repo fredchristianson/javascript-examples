@@ -1,0 +1,77 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
+#container {
+    box-sizing: border-box;
+    height: 100vh;
+    width: 100vw;
+    padding: 5vh;
+    overflow: hidden;
+}
+
+#grid {
+    display:grid;
+    width: 90vw;
+    height: 90vh;
+    grid-template-areas: 
+    "topleft     hsize-top      topright"
+    "vsize       vsize          vsize"
+    "bottomleft  hsize-bottom   bottomright";
+
+    grid-template-columns: auto 8px 1fr;
+    grid-template-rows: auto 8px 1fr;
+}
+
+.top-left {
+    grid-area: topleft;
+    background-color: green;
+}
+
+.top-right {
+    grid-area: topright;
+    background-color: blue;
+}
+
+.bottom-left {
+    grid-area: bottomleft;
+    background-color: red;
+}
+
+.bottom-right {
+    grid-area: bottomright;
+    background-color: yellow;
+}
+
+.sizer, .sizer {
+    border: 1px dotted #aaa;
+    min-width: 4px;
+    min-height: 4px;
+    background-color: #ccc;
+}
+
+.sizer.active {
+    opacity: 0;
+}
+
+.sizer.horiz {
+    cursor: col-resize;
+}
+
+.sizer.vert {
+    cursor: row-resize;
+}
+
+.sizer.horiz.top {
+    grid-area: hsize-top;
+}
+
+.sizer.horiz.bottom {
+    grid-area: hsize-bottom;
+}
+
+
+.sizer.vert {
+    grid-area: vsize;
+}

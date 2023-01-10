@@ -1,0 +1,105 @@
+<html>
+
+<link rel="stylesheet" href="../common/css/style.css" />
+<link rel="stylesheet" href="./style.css" />
+</style>
+
+<body>
+    <div id="container">
+        <div id="grid">
+            <div class="top-left"></div>
+            <div class="sizer horiz top" draggable="true"></div>
+            <div class="top-right"></div>
+            <div class="sizer vert" draggable="true"></div>
+            <div class="bottom-left"></div>
+            <div class="sizer horiz bottom" draggable="true"></div>
+            <div class="bottom-right"></div>
+
+
+        </div>
+    </div>
+</body>
+
+<script type="module">
+    import { Logger } from "../common/log/logger.js";
+    const log = new Logger("GridDragDrop");
+
+    const grid = document.getElementById("grid");
+    const vertSizer = document.querySelector(".sizer.vert");
+    const horizTopSizer = document.querySelector(".sizer.horiz.top");
+    const horizBottomSizer = document.querySelector(".sizer.horiz.bottom");
+    const topLeft = document.querySelector(".top-left");
+
+        topLeft.style.width = `${grid.offsetWidth / 2}px`;
+        topLeft.style.height = `${grid.offsetHeight / 2}px`;
+    var resizeHandler = null;
+
+    vertSizer.addEventListener("dragstart", vertDragStart);
+    vertSizer.addEventListener("dragend", vertDragEnd);
+
+    horizTopSizer.addEventListener("dragstart", horizDragStart);
+    horizTopSizer.addEventListener("dragend", horizDragEnd);
+    horizBottomSizer.addEventListener("dragstart", horizDragStart);
+    horizBottomSizer.addEventListener("dragend", horizDragEnd);
+
+    function vertDragStart(event) {
+
+        event.target.classList.add("active");
+        log.debug("drag start");
+        var box = grid.getBoundingClientRect();
+        resizeHandler = function (dragEvent) {
+            const y = dragEvent.clientY;
+            if (y < box.top || y > box.bottom) { return;}
+            log.debug(`resize ${dragEvent.clientY-box.top}`);
+            topLeft.style.height = `${dragEvent.clientY-box.top}px`;
+        }
+    }
+
+    function vertDragEnd(event) {
+        event.target.classList.remove("active");
+        log.debug("drag end");
+        resizeHandler = null;
+    }
+
+    function horizDragStart(event) {
+        event.target.classList.add("active");
+        log.debug("drag start");
+        var box = grid.getBoundingClientRect();
+        resizeHandler = function (dragEvent) {
+            const x = dragEvent.clientX;
+            if (x < box.left || x > box.right) { return; }
+            log.debug(`resize ${dragEvent.clientX-box.left}`);
+            topLeft.style.width = `${dragEvent.clientX-box.left}px`;
+        }
+    }
+
+    function horizDragEnd(event) {
+        event.target.classList.remove("active");
+        log.debug("drag end");
+        resizeHandler = null;
+    }
+
+
+    grid.addEventListener("dragenter", dragEnter);
+    grid.addEventListener("dragover", dragOver);
+    // grid.addEventListener("drop", drop);
+
+
+    function dragEnter(event) {
+        log.debug("drag enter");
+        event.preventDefault();
+    }
+    function dragOver(event) {
+        if (resizeHandler) {
+            resizeHandler(event);
+        }
+        log.debug("drag over");
+        event.preventDefault();
+    }
+    function drop(event) {
+        log.debug("drop");
+        event.preventDefault();
+    }
+</script>
+
+</html>

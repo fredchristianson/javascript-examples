@@ -1,0 +1,24 @@
+body {
+    background-color: white;
+}
+
+pre {
+    background-color: #cccccc;
+    padding: 8px;
+    margin: 2em 1em;
+}
+
+.links li {
+    list-style: none;
+    border-bottom: 1px solid #cccccc;
+}
+
+.links a {
+    text-decoration: none;
+    display: inline-block;
+    width: 20%;
+}
+.links .description {
+    margin-left: 2rem;
+}
+

@@ -1,0 +1,102 @@
+<html>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    #example {
+        overflow: hidden;
+        height: 100vh;
+        display: grid;
+        grid-template-areas:
+            "buttons log"
+            "module-a log"
+            "module-b log";
+        grid-template-columns: 50% 1fr;
+        grid-template-rows: 32px auto 1fr;
+    }
+
+    #buttons {
+        grid-area: buttons;
+    }
+    #module-a {
+        grid-area: module-a;
+        background-color: #cccccc;
+        height: 200px;
+    }
+
+    #module-b {
+        grid-area: module-b;
+        background-color: #aaaaaa;
+    }
+
+    #log {
+        grid-area: log;
+        border-left: 1px solid black;
+        height: 100vh;
+        padding: 2em;
+        overflow: auto;
+    }
+</style>
+
+<body>
+    <div id="example">
+        <div id="buttons">
+            <button value="100">DEBUG</button>
+            <button value="85">Above INFO</button>
+            <button value="INFO">INFO</button>
+            <button value="75">Below INFO</button>
+            <button value="warn">WARN</button>
+            <button value="ERROR">ERROR</button>
+            <button value="always">ALWAYS</button>
+            <button value="NEVER">NEVER</button>
+        </div>
+        <div id="module-a"></div>
+        <div id="module-b"></div>
+        <div id="log"></div>
+    </div>
+</body>
+
+<script type="module">
+    import { Logger, LogLevel } from "../common/log/logger.js";
+    const log = new Logger("Application", LogLevel.INFO);
+    var cnt = 0;
+    log.debug(`this is a debug message ${cnt++}`);
+    log.info(`this is a info message ${cnt++}`);
+    log.warn(`this is a warn message ${cnt++}`);
+    log.error(`this is a error message ${cnt++}`);
+    log.always(`this is a always message ${cnt++}`);
+    log.never(`this is a never message ${cnt++}`);
+
+    const buttons = document.getElementById("buttons");
+    buttons.addEventListener("click",(event)=>{
+        const value = event.target.value;
+        log.always(`button value ${value}`);
+        const newLevel = LogLevel.get(value);
+        log.setLevel(newLevel);
+    });
+
+    const moduleA = document.getElementById("module-a");
+    const moduleB = document.getElementById("module-b");
+
+
+    function mouseMove(event) {
+        var target = event.target;
+        log.info(`mousemove ${target.id}`);
+        log.debug(`\t   (${event.x},${event.y})`);
+    }
+
+    function mouseDown(event) {
+        var target = event.target;
+        log.info(`mousedown ${target.id}`);
+        log.debug(`\t (${event.x}, ${event.y})`);
+    }
+
+    moduleA.addEventListener("mousemove", mouseMove);
+    moduleB.addEventListener("mousemove", mouseMove);
+    moduleA.addEventListener("mousedown", mouseDown);
+    moduleB.addEventListener("mousedown", mouseDown);
+</script>
+
+</html>

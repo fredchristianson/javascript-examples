@@ -1,0 +1,10 @@
+{
+    "js-minifier-with-closure.outputPaths": [
+    
+        {
+            "context": "file",
+            "path": null,
+            "filename": "${filename}${suffix}.js"
+        }
+    ]
+}
