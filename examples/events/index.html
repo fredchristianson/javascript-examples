@@ -1,0 +1,120 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="../common/css/style.css" />
+    <link rel="stylesheet" href="./style.css" />
+
+</head>
+
+<body>
+    <div id="example">
+        <div id="controls" class="a b c">
+            <label><input type="checkbox" id="mouse-listeners" data-type="mouse">Mouse</label>
+            <label><input type="checkbox" id="input-listeners" data-type="input">Input</label>
+            <label><input type="checkbox" id="key-listeners" data-type="key">Key</label>
+        </div>
+        <div id="watch">
+            <div class="mouseenter">
+                <input type="text" name="name" placeholder="name">
+            </div>
+        </div>
+        <div class="log-view">
+            <div class="controls">
+                <span>Log </span>
+                <button id="clear-log">Clear</button>
+                <select id="log-level">
+                    <option value="100">Debug</option>
+                    <option value="80">Info</option>
+                    <option value="60">Warn</option>
+                    <option value="40">Error</option>
+                    <option value="0">Always</option>
+                </select>
+            </div>
+            <div id="LOG-CONTAINER"></div>
+        </div>
+    </div>
+</body>
+
+<script type="module">
+    import { Logger } from "../common/log/logger.js";
+    import { DOMDestination, ConsoleDestination} from "../common/log/log-destination.js";
+    import * as Event from "../common/event/event.js";
+    import {
+        BuildCheckboxListener,
+        BuildMouseListener,
+        BuildClickListener,
+        BuildInputListener
+    } from "../common/event/event.js";
+    import { Listeners } from "../common/event/listeners.js";
+
+    /* Setup logging.
+     * create destinations before any log message to avoid default loggers.
+     */
+    const log = new Logger("Example");
+    
+    const logMessageContainer = document.getElementById('LOG-CONTAINER');
+    const consoleDestination = new ConsoleDestination();
+    const domDestination = new DOMDestination(logMessageContainer);
+    const logListeners = new Listeners(
+        BuildClickListener().listen("#clear-log").onClick(clearLog).build(),
+        BuildInputListener().listen("#log-level").onChange(setLogLevel).build(),
+    );
+     log.debug("Event example running");
+
+    function setLogLevel(value) {
+        domDestination.setLevel(value);
+    }
+
+    function clearLog() {
+        while (logMessageContainer.firstChild) {
+            logMessageContainer.removeChild(logMessageContainer.firstChild);
+        }
+    }
+
+    
+    function logEvent(target, event,handler) {
+        log.debug(`event ${event.type} for element `,event.target, `. Handled by `,event.currentTarget);
+        log.debug(handler);
+    }
+
+    const mouseListeners = new Listeners();
+
+    function addStyle(target, event) {
+        target.classList.add("active");
+    }
+
+    function removeStyle(target, event) {
+        target.classList.remove("active");
+    }
+
+
+    function addListeners(type) {
+        if (type == "mouse") {
+            mouseListeners.add(
+                BuildMouseListener().listen('#watch').onMouseMove(() => { log.debug("move"); })
+                    .build()
+            );
+        }
+    }
+
+    function removeListeners(type) {
+        mouseListeners.removeAll();
+    }
+
+    const styleListener = BuildCheckboxListener()
+        .listen("#controls", "input[type='checkbox']")
+        .setData((event) => { return event.target.dataset.type; })
+        .onChecked(addListeners)
+        .onUnchecked(removeListeners)
+        .build();
+
+    const labelListener = BuildCheckboxListener()
+        .listen("#controls", "label")
+        .onChecked(addStyle)
+        .onUnchecked(removeStyle)
+        .onChecked(logEvent)
+        .build();
+
+</script>
+
+</html>

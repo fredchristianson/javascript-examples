@@ -64,10 +64,10 @@ class LogLevel {
 }
 
 class LogMessage {
-  constructor(moduleName, level, text) {
+  constructor(moduleName, level, ...text) {
     this.moduleName = moduleName;
     this.level = level;
-    this.text = text;
+    this.text = this.combineTextParts(text);
     // log time is stored so these can be sent asynchronously
     this.time = Date.now();
   }
@@ -83,6 +83,32 @@ class LogMessage {
   }
   getTime() {
     return this.time;
+  }
+
+  combineTextParts(parts) {
+    if (parts == null) {
+      return "";
+    }
+    const stringParts = [];
+    parts.forEach((part) => {
+      if (part == null) {
+        stringParts.push("--null--");
+      }
+      if (part instanceof HTMLElement) {
+        const tag = part.tagName;
+        const id = part.id != null && part.id.length > 0 ? `#${part.id}` : "";
+        const className =
+          part.classList.length > 0 ? `.${[...part.classList].join(".")}` : "";
+        const elementText = `<${part.tagName}${id}${className}>`;
+        stringParts.push(elementText);
+      } else if (typeof part == "object") {
+        const json = JSON.stringify(part, null, 4);
+        stringParts.push(json);
+      } else {
+        stringParts.push(part);
+      }
+    });
+    return stringParts.join(" ");
   }
 }
 

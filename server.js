@@ -39,7 +39,10 @@ const server = http.createServer((req, res) => {
       fs.accessSync(path.join(root, req.url + ".html"), fs.constants.F_OK);
       fileName = req.url + ".html";
     } catch (e) {
-      fileName = path.join(req.url, "index.html");
+      var location = req.url + "/index.html";
+      res.writeHead(302, { Location: location });
+      res.end();
+      return;
     }
   }
 

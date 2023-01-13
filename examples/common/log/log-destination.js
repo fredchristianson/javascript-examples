@@ -6,9 +6,10 @@ export * from "./common.js";
 
 const DEFAULT_LOG_FORMATTER = new LogFormatter();
 const destinations = [];
+var defaultLogLevel = DEFAULT_LOG_LEVEL;
 
 export class LogDestination {
-  constructor(level, formatter = DEFAULT_LOG_FORMATTER) {
+  constructor(level = null, formatter = DEFAULT_LOG_FORMATTER) {
     this.level = level;
     this.formatter = formatter;
     destinations.push(this);
@@ -17,9 +18,14 @@ export class LogDestination {
     this.formatter = formatter;
   }
 
+  setLevel(level) {
+    this.level = LogLevel.get(level);
+  }
+
   write(message) {
     if (message instanceof LogMessage) {
-      if (this.level == null || this.level.isWanted(message.getLevel())) {
+      const level = this.level == null ? defaultLogLevel : this.level;
+      if (level.isWanted(message.getLevel())) {
         const text = this.formatter.format(message);
         this.writeLine(text, message);
       }
@@ -89,7 +95,7 @@ export class DOMDestination extends LogDestination {
     const element = document.createElement("div");
     const level = logMessage.getLevel().getName();
     element.className = `log ${level}`;
-    element.innerHTML = text;
+    element.innerText = text;
     this.domElement.appendChild(element);
     this.domElement.scrollTo(0, this.domElement.scrollHeight);
   }
@@ -113,4 +119,8 @@ export function writeMessage(message) {
   }
 }
 
+export function setDefaultLevel(level) {
+  const logLevel = LogLevel.get(level);
+  defaultLogLevel = logLevel;
+}
 export default writeMessage;

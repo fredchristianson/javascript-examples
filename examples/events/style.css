@@ -1,0 +1,66 @@
+
+#example {
+    display: grid;
+    height: 100vh;
+    overflow: hidden;
+    grid-template-areas: 
+    "control log"
+    "watch   log";
+    grid-template-rows: 25% 1fr;
+    grid-template-columns: 1fr 500px;
+
+}
+
+#controls {
+    grid-area: control;
+    background-color: #cccccc;
+    padding: 8px;
+}
+
+#watch {
+    grid-area: watch;
+    background-color: #fff;
+}
+
+.log-view {
+    grid-area: log;
+    display:flex;
+    flex-flow: column;
+    align-items: stretch;
+    height: 100%;
+}
+
+.log-view .controls {
+    flex: 0 1 auto;
+    padding: 8px;
+    border-bottom: 1px solid #444;
+}
+#LOG-CONTAINER {
+    flex: 1 1 auto;
+    background-color: #e3e3ff;
+    border-left: 4px dashed #000;
+    overflow: auto;
+    padding: 8px;
+}
+
+.log  {
+    text-indent: -2em;
+    padding-left: 2em;
+    white-space: pre-wrap;
+}
+
+.log.DEBUG {
+    color: hsl(0 0% 20%);
+}
+
+.log.INFO {
+    color: hsl(0 0% 0%);
+}
+
+.log.WARN {
+    color: hsl(60  50% 55%);
+}
+
+.log.ERROR {
+    color: hsl(0 50% 55%);
+}

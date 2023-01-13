@@ -59,12 +59,20 @@
 
 <script type="module">
     import { Logger, LogLevel } from "../common/log/logger.js";
-    import {ConsoleDestination, DOMDestination} from "../common/log/log-destination.js";
+    import {ConsoleDestination, DOMDestination, LogDestination} from "../common/log/log-destination.js";
     
     const consoleDestination = new ConsoleDestination(LogLevel.INFO);
     const domDestination = new DOMDestination(document.getElementById("log1"),LogLevel.DEBUG);
     const domDestination2 = new DOMDestination(document.getElementById("log2"), LogLevel.ERROR);
     const log = new Logger("Application", LogLevel.DEBUG);
+
+    class MyDestination extends LogDestination {
+        writeLine(text, logMessage) {
+            console.log(text.split("").reverse().join(""));
+        }
+    }
+
+    const myDestination = new MyDestination();
 
     var cnt = 0;
     log.debug(`this is a debug message ${cnt++}`);
