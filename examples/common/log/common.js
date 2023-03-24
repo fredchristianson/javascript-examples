@@ -7,25 +7,25 @@
 
 class LogLevel {
   static get(level) {
-    if (typeof level == "string") {
+    if (typeof level == 'string') {
       level = level.toUpperCase();
     }
-    if (level == 100 || level == "DEBUG") {
+    if (level == 100 || level == 'DEBUG') {
       return LogLevel.DEBUG;
     }
-    if (level == 80 || level == "INFO") {
+    if (level == 80 || level == 'INFO') {
       return LogLevel.INFO;
     }
-    if (level == 60 || level == "WARN") {
+    if (level == 60 || level == 'WARN') {
       return LogLevel.WARN;
     }
-    if (level == 40 || level == "ERROR") {
+    if (level == 40 || level == 'ERROR') {
       return LogLevel.ERROR;
     }
-    if (level == 0 || level == "ALWAYS") {
+    if (level == 0 || level == 'ALWAYS') {
       return LogLevel.ALWAYS;
     }
-    if (level == -1 || level == "NEVER") {
+    if (level == -1 || level == 'NEVER') {
       return LogLevel.NEVER;
     }
     if (!isNaN(level)) {
@@ -87,38 +87,44 @@ class LogMessage {
 
   combineTextParts(parts) {
     if (parts == null) {
-      return "";
+      return '';
     }
     const stringParts = [];
+    let stack = '';
     parts.forEach((part) => {
       if (part == null) {
-        stringParts.push("--null--");
+        stringParts.push('--null--');
       }
+      if (part instanceof Error) {
+        stack = '\n' + part.stack;
+      }
+
       if (part instanceof HTMLElement) {
         const tag = part.tagName;
-        const id = part.id != null && part.id.length > 0 ? `#${part.id}` : "";
+        const id = part.id != null && part.id.length > 0 ? `#${part.id}` : '';
         const className =
-          part.classList.length > 0 ? `.${[...part.classList].join(".")}` : "";
+          part.classList.length > 0 ? `.${[...part.classList].join('.')}` : '';
         const elementText = `<${part.tagName}${id}${className}>`;
         stringParts.push(elementText);
-      } else if (typeof part == "object") {
+      } else if (typeof part == 'object') {
         const json = JSON.stringify(part, null, 4);
         stringParts.push(json);
       } else {
         stringParts.push(part);
       }
     });
-    return stringParts.join(" ");
+    stringParts.push(stack);
+    return stringParts.join(' ');
   }
 }
 
-LogLevel.DEBUG = new LogLevel(100, "DEBUG");
-LogLevel.INFO = new LogLevel(80, "INFO");
-LogLevel.WARN = new LogLevel(60, "WARN");
-LogLevel.ERROR = new LogLevel(40, "ERROR");
-LogLevel.ALWAYS = new LogLevel(0, "ALWAYS");
-LogLevel.NEVER = new LogLevel(-1, "NEVER");
+LogLevel.DEBUG = new LogLevel(100, 'DEBUG');
+LogLevel.INFO = new LogLevel(80, 'INFO');
+LogLevel.WARN = new LogLevel(60, 'WARN');
+LogLevel.ERROR = new LogLevel(40, 'ERROR');
+LogLevel.ALWAYS = new LogLevel(0, 'ALWAYS');
+LogLevel.NEVER = new LogLevel(-1, 'NEVER');
 
-var DEFAULT_LOG_LEVEL = new LogLevel(100, "DEBUG");
+var DEFAULT_LOG_LEVEL = new LogLevel(100, 'DEBUG');
 export { LogLevel, LogMessage, DEFAULT_LOG_LEVEL };
 export default LogLevel;

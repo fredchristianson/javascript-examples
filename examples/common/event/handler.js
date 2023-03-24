@@ -1,13 +1,11 @@
-import { Logger } from "../log/logger.js";
-import { Continuation } from "./continuation.js";
-const log = new Logger("EventHandler");
+import { Logger, LogLevel } from '../log/logger.js';
+import { Continuation } from './continuation.js';
+const log = new Logger('EventListener', LogLevel.ERROR);
 
 class HandlerBuilder {
-  constructor(eventHandler) {
+  constructor(eventHandler = null) {
     if (eventHandler == null) {
-      throw new Error(
-        "HandlerBuilder constructor requires an eventHandler parameter"
-      );
+      eventHandler = new EventListener();
     }
     this.eventHandler = eventHandler;
     this.listenToElement = document.body;
@@ -22,12 +20,15 @@ class HandlerBuilder {
       this.listenToElement = document.querySelector(listenElement);
     }
     if (this.listenToElement == null) {
-      throw new Error("listen element not found");
+      throw new Error('listen element not found');
     }
     this.targetSelectors = targetSelectors;
     return this;
   }
 
+  debounce() {
+    return this.setDebounceMSecs(250);
+  }
   setDebounceMSecs(msecs = 250) {
     this.eventHandler.setDebounceMSecs(msecs);
     return this;
@@ -35,13 +36,16 @@ class HandlerBuilder {
 
   withAlt(require = true) {
     this.eventHandler.requireAlt = require;
+    return this;
   }
 
   withCtrl(require = true) {
     this.eventHandler.requireCtrl = require;
+    return this;
   }
   withShift(require = true) {
     this.eventHandler.requireShift = require;
+    return this;
   }
 
   build() {
@@ -52,10 +56,18 @@ class HandlerBuilder {
 
   /* provide a function that returns true for events that should be processed*/
   filterAllow(filterFunc) {
-    if (typeof filterFunc != "function") {
-      throw new Error("filterAllow requires a function parameter");
+    if (typeof filterFunc != 'function') {
+      throw new Error('filterAllow requires a function parameter');
     }
-    this.eventHandler.filter = filterFunc;
+    this.eventHandler.filterAllow = filterFunc;
+    return this;
+  }
+  /* provide a function that returns true for events that should be processed*/
+  filterExclude(filterFunc) {
+    if (typeof filterFunc != 'function') {
+      throw new Error('filterExclude requires a function parameter');
+    }
+    this.eventHandler.filterExclude = filterFunc;
     return this;
   }
   setData(data) {
@@ -64,14 +76,15 @@ class HandlerBuilder {
   }
 
   setContinuation(continuation) {
-    this.eventHandler.Continuation = continuation;
+    this.eventHandler.DefaultContinuation = continuation;
+    return this;
   }
   createEventHandler() {
-    throw new Error("derived class must implement createEventHandler");
+    throw new Error('derived class must implement createEventHandler');
   }
 }
 
-class EventHandler {
+class EventListener {
   constructor() {
     this.listenerMethod = this.handleEvent.bind(this);
     this.element = null;
@@ -83,7 +96,8 @@ class EventHandler {
     this.RequireAlt = false;
     this.RequireCtrl = false;
     this.RequireShift = false;
-    this.filter = null;
+    this.filterAllow = null;
+    this.filterExclude = null;
 
     this._defaultContinuation = Continuation.Continue;
     this._eventTypeListenOptions = {};
@@ -91,14 +105,18 @@ class EventHandler {
 
   listen(element) {
     this.eventTypes = this.getEventTypes();
-    if (typeof this.eventTypes == "string") {
+    if (typeof this.eventTypes == 'string') {
       this.eventTypes = [this.eventTypes];
     }
     if (this.eventTypes == null) {
-      log.warn("EventHandler does not have any event types");
+      log.warn('EventListener does not have any event types');
       return;
     }
-    this.element = element;
+    if (typeof element == 'string') {
+      this.element = document.querySelector(element);
+    } else {
+      this.element = element;
+    }
     this.eventTypes.forEach((type) => {
       const listenOption = this.getEventOptions(type);
       this._eventTypeListenOptions[type] = listenOption;
@@ -187,11 +205,11 @@ class EventHandler {
   }
 
   /* if alt,ctrl, or shift is required, the event must have the flag true.
-   *    events where keyboard flags are undefined, are always allowed.
+   *    events where keyboard flags are undefined, are never allowed.
    */
   keyMismatch(event) {
-    if (typeof event.altKey == "undefined") {
-      return false; // always allow
+    if (typeof event.altKey == 'undefined') {
+      return false; // never allow
     }
     if (this.requireAlt && !event.altKey) {
       return true;
@@ -206,10 +224,13 @@ class EventHandler {
   }
 
   filterFail(event) {
-    return this.filter != null && !this.filter(event);
+    return (
+      (this.filterAllow != null && !this.filterAllow(event)) ||
+      (this.filterExclude != null && this.filterExclude(event))
+    );
   }
   handleEvent(event) {
-    log.debug(`handle event ${event.type}`);
+    log.never(`handle event ${event.type}`);
     if (
       this.selectorMismatch(event) ||
       this.keyMismatch(event) ||
@@ -220,12 +241,15 @@ class EventHandler {
 
     if (this.debounceMSecs > 0) {
       if (this.debounceTimer) {
+        log.never('clearTimout');
         clearTimeout(this.debounceTimer);
       }
       this.debounceTimer = setTimeout(() => {
+        log.never('in timeout ', event.type);
         this.invokeHandler(event);
         this.debounceTimer = null;
       }, this.debounceMSecs);
+      log.never('timeoutSet ');
     } else {
       this.invokeHandler(event);
     }
@@ -237,7 +261,7 @@ class EventHandler {
   }
 
   callHandlers(event) {
-    throw new Error("derived class must implement callHandlers");
+    throw new Error('derived class must implement callHandlers');
   }
   remove() {
     this.eventTypes.forEach((type) => {
@@ -250,7 +274,7 @@ class EventHandler {
   }
 
   getEventTypes() {
-    throw new Error("derived class must implement getEventTypes()");
+    throw new Error('derived class must implement getEventTypes()');
   }
 
   getEventOptions(type) {
@@ -259,4 +283,4 @@ class EventHandler {
   }
 }
 
-export { HandlerBuilder, EventHandler };
+export { HandlerBuilder, EventListener };

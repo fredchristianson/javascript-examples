@@ -17,7 +17,14 @@
     padding: 8px;
 }
 
+#controls .active {
+    color: blue;
+    font-size: larger;
+    font-weight: bolder;
+}
+
 #watch {
+    padding: 2rem;
     grid-area: watch;
     background-color: #fff;
 }

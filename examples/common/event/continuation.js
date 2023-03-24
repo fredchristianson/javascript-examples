@@ -1,5 +1,5 @@
-import { Logger } from "../log/logger.js";
-const log = new Logger("EventContinuation");
+import { Logger } from '../log/logger.js';
+const log = new Logger('EventContinuation');
 
 class Continuation {
   static get Continue() {
@@ -22,16 +22,6 @@ class Continuation {
     this.stopPropagation = stopPropagation;
     this.stopImmediate = stopImmediate;
     this.preventDefault = preventDefault;
-  }
-
-  merge(other) {
-    if (other == null || !(other instanceof Continuation)) {
-      // do nothing if the parameter isn't Continuation
-      return;
-    }
-    this.stopImmediate |= other.stopImmediate;
-    this.stopPropagation |= other.stopPropagation;
-    this.preventDefault |= other.preventDefault;
   }
 
   replace(other) {

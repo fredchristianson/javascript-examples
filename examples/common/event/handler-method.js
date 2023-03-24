@@ -1,16 +1,16 @@
-import { Logger } from "../log/logger.js";
-const log = new Logger("EventHandler");
+import { Logger } from '../log/logger.js';
+const log = new Logger('EventListener');
 
 class HandlerMethod {
   constructor(object, method, defaultMethodName = null) {
-    if (typeof object == "function") {
+    if (typeof object == 'function') {
       // passed a simple function so it is the method
       this.object = null;
       this.method = object;
-    } else if (typeof object == "object") {
+    } else if (typeof object == 'object') {
       this.object = object;
 
-      if (typeof method == "function") {
+      if (typeof method == 'function') {
         this.method = method;
       } else {
         this.method = this.findMethod(this.object, method, defaultMethodName);
@@ -20,16 +20,16 @@ class HandlerMethod {
       this.method = null;
     }
     if (this.method == null) {
-      throw new Error("HandlerMethod requires a funciton or object and method");
+      throw new Error('HandlerMethod requires a funciton or object and method');
     }
   }
 
   findMethod(object, method, defaultMethod) {
     var found = null;
-    if (method != null && typeof method == "string") {
+    if (method != null && typeof method == 'string') {
       found = object[method];
     }
-    if (found == null && typeof defaultMethod == "string") {
+    if (found == null && typeof defaultMethod == 'string') {
       found = object[defaultMethod];
     }
     return found;
@@ -43,20 +43,20 @@ class HandlerMethod {
       try {
         if (dataSource) {
           var data = dataSource;
-          if (typeof dataSource == "function") {
+          if (typeof dataSource == 'function') {
             data = dataSource(event);
           }
 
-          continuation.merge(
+          continuation.replace(
             this.method.call(this.object, data, ...args, target, event, handler)
           );
         } else {
-          continuation.merge(
+          continuation.replace(
             this.method.call(this.object, ...args, target, event, handler)
           );
         }
       } catch (ex) {
-        log.error(ex, "event handler failed");
+        log.error(ex, 'event handler failed');
       }
     }
     return continuation;

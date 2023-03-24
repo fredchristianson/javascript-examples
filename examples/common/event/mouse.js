@@ -1,19 +1,19 @@
-import { Logger } from "../log/logger.js";
-import { EventTypeHandlers } from "./event-type-handlers.js";
-import { HandlerMethod } from "./handler-method.js";
-import { EventHandler, HandlerBuilder } from "./handler.js";
-const log = new Logger("MouseHandler");
+import { Logger } from '../log/logger.js';
+import { EventTypeHandlers } from './event-type-handlers.js';
+import { HandlerMethod } from './handler-method.js';
+import { EventListener, HandlerBuilder } from './handler.js';
+const log = new Logger('MouseHandler');
 
 const eventTypes = [
-  "mousedown",
-  "mouseup",
-  "click",
-  "dblclick",
-  "mousemove",
-  "mouseover",
-  "mousewheel",
-  "mouseout",
-  "contextmenu",
+  'mousedown',
+  'mouseup',
+  'click',
+  'dblclick',
+  'mousemove',
+  'mouseover',
+  'wheel',
+  'mouseout',
+  'contextmenu'
 ];
 
 class MousePosition {
@@ -28,14 +28,21 @@ class MousePosition {
 
   update(event) {
     this.event = event;
-    if (event != null) {
-      var target = event.currentTarget;
+    var target = event?.currentTarget ?? event.target;
+    if (target != null) {
       this.width = target.clientWidth;
       this.height = target.clientHeight;
       this.x = event.offsetX;
       this.y = event.offsetY;
       this.pctX = this.width > 0 ? (this.x * 1.0) / this.width : 0;
       this.pctY = this.height > 0 ? (this.y * 1.0) / this.height : 0;
+    } else {
+      this.x = 0;
+      this.y = 0;
+      this.width = 0;
+      this.height = 0;
+      this.pctX = 0;
+      this.pctY = 0;
     }
   }
 
@@ -48,7 +55,7 @@ class MousePosition {
     return Math.floor(this.pctY * 100);
   }
 }
-class MouseHandler extends EventHandler {
+class MouseHandler extends EventListener {
   constructor() {
     super();
     this.eventTypeHandlers = new EventTypeHandlers();
@@ -62,7 +69,12 @@ class MouseHandler extends EventHandler {
     const mousePosition = new MousePosition(event);
     const handlers = this.eventTypeHandlers.getHandlersByType(event.type);
     handlers.forEach((handler) => {
-      continuation.merge(handler.call(this, event, target, mousePosition));
+      if (event.type == 'mousewheel') {
+        const distance = { deltaX: event.deltaX, deltaY: event.deltaY };
+        continuation.replace(handler.call(this, event, distance));
+      } else {
+        continuation.replace(handler.call(this, event, mousePosition));
+      }
     });
     return continuation;
   }
@@ -79,16 +91,48 @@ class MouseHandlerBuilder extends HandlerBuilder {
 
   onMouseMove(...handler) {
     this.eventHandler.addHandler(
-      "onmousemove",
-      new HandlerMethod(...handler, "onMouseMove")
+      'mousemove',
+      new HandlerMethod(...handler, 'onMouseMove')
     );
     return this;
   }
 
   onMouseDown(...handler) {
     this.eventHandler.addHandler(
-      "onmousedown",
-      new HandlerMethod(...handler, "onMouseDown")
+      'mousedown',
+      new HandlerMethod(...handler, 'onMouseDown')
+    );
+    return this;
+  }
+
+  onMouseUp(...handler) {
+    this.eventHandler.addHandler(
+      'mouseup',
+      new HandlerMethod(...handler, 'onMouseUp')
+    );
+    return this;
+  }
+
+  onMouseOver(...handler) {
+    this.eventHandler.addHandler(
+      'mouseover',
+      new HandlerMethod(...handler, 'onMouseOver')
+    );
+    return this;
+  }
+
+  onMouseOut(...handler) {
+    this.eventHandler.addHandler(
+      'mouseout',
+      new HandlerMethod(...handler, 'onMouseOut')
+    );
+    return this;
+  }
+
+  onMouseWheel(...handler) {
+    this.eventHandler.addHandler(
+      'wheel',
+      new HandlerMethod(...handler, 'onMouseWheel')
     );
     return this;
   }

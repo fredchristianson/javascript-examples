@@ -1,0 +1,66 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="../common/css/style.css" />
+        <link rel="stylesheet" href="./style.css" />
+    <style>
+    #example {
+        padding: 4em;
+    }
+
+    </style>
+    </head>
+
+    <body>
+        <div id="example">
+            <div>
+                <div>Press start to create windows</div>
+                <button id="start">Start</button>
+            </div>
+            <div class="hide">
+                <div>Press stop to close windows</div>
+                <button id="stop">Stop</button>
+            </div>
+        </div>
+    </body>
+    </html>
+    <script type="module">
+        import { createChildWindow } from './child-windows.js';
+        let logWindow = null;
+        let controlWindow = null;
+        let drawWindow = null;
+
+        const stopButton = document.getElementById('stop');
+        const startButton = document.getElementById('start');
+
+        function closeWindows() {
+            logWindow?.close();
+            controlWindow?.close();
+            drawWindow?.close();
+            startButton.parentElement.classList.remove('hide');
+            stopButton.parentElement.classList.add('hide');
+        }
+
+        async function openWindows() {
+            logWindow = await createChildWindow("log","log.html");
+            controlWindow = await createChildWindow("controw", "control.html");
+            drawWindow = await createChildWindow("draw", "draw.html");
+            startButton.parentElement.classList.add('hide');
+            stopButton.parentElement.classList.remove('hide');
+        }
+
+        startButton.addEventListener('click',()=>{
+            closeWindows();
+            openWindows();
+        });
+
+        stopButton.addEventListener('click', () => {
+            closeWindows();
+        });
+
+        window.addEventListener('beforeunload', () => {
+               logWindow?.close();
+               controlWindow?.close();
+               drawWindow?.close();
+            });
+    </script>
+</html>

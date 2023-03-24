@@ -1,0 +1,63 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="../common/css/style.css" />
+    <link rel="stylesheet" href="./style.css" />
+
+</head>
+
+<body>
+    <div id="example">
+        <div id="watch">
+            <div class="mouseenter">
+                <input type="text" name="name" placeholder="name">
+            </div>
+        </div>
+        <div class="log-view">
+
+            <div id="LOG-CONTAINER"></div>
+        </div>
+    </div>
+</body>
+
+<script type="module">
+    import { Logger } from "../common/log/logger.js";
+    import { DOMDestination, ConsoleDestination } from "../common/log/log-destination.js";
+    import * as Event from "../common/event/event.js";
+    import {
+        BuildMouseListener
+    } from "../common/event/event.js";
+    import { Listeners } from "../common/event/listeners.js";
+
+    /* Setup logging.
+     * create destinations before any log message to avoid default loggers.
+     */
+    const log = new Logger("Example");
+
+    log.debug("Event example running");
+
+    BuildMouseListener()
+        .listen('#watch')
+        .onMouseMove(simpleMouseMove)
+        .onMouseDown(mouseDown)
+        .onMouseUp(mouseUp)
+        .build();
+
+    function simpleMouseMove(pos) {
+        log.debug("mouseMove ", pos);
+    }
+
+    function mouseUp(pos) {
+        log.debug("mouseUp ", pos);
+    }
+
+    function mouseDown(pos) {
+        log.debug("mouseDown ", pos);
+    }
+
+
+
+
+</script>
+
+</html>

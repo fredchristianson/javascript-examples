@@ -1,0 +1,83 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="../common/css/style.css" />
+    <link rel="stylesheet" href="./style.css" />
+
+</head>
+
+<body>
+    <div id="example">
+        <div id="watch">
+            <input type="text" id='name' name="name" placeholder="name">
+            <input type="text" id='value' name="value" placeholder="value">
+            <button id="save">Save</button><button id="load">Load</button>
+        </div>
+        <div class="log-view">
+
+            <div id="LOG-CONTAINER"></div>
+        </div>
+    </div>
+</body>
+
+<script type="module">
+    import { Logger } from "../common/log/logger.js";
+
+    const log = new Logger("IndexedDB");
+
+    log.debug("IndexedDB example running");
+
+    let theDatabase = null; // null==>not opened yet
+
+    function handleDBOpenSuccess(event) {
+        log.debug("open success");
+        // database is openened. save it
+        theDatabase = event.target.result;
+    }
+
+    function handleDBOpenError(event) {
+        log.debug("open failed");
+    }
+
+        
+    function handleUpdgradeNeeded(event) {
+        log.info('database upgrade needed');
+        const database = event.target.result;
+        database.createObjectStore("example-table", { keyPath: "id" });
+    };
+
+    const request = indexedDB.open("indexeddb-example", 1);
+
+    request.onsuccess = handleDBOpenSuccess;
+    request.onerror = handleDBOpenError;
+    request.onupgradeneeded = handleUpdgradeNeeded;
+
+    const name = document.getElementById('name');
+    const value = document.getElementById('value');
+    function save() {
+        log.info('save');
+        const record = {"id":name.value, "value": value.value};
+        const transaction = theDatabase.transaction('example-table', 'readwrite');
+        const store = transaction.objectStore('example-table');
+        store.add(record);
+        transaction.oncomplete = (event)=>{
+            log.debug("save complete");
+        }
+    }
+
+    async function load() {
+        log.info('load');
+        const transaction = theDatabase.transaction('example-table', 'readonly');
+        const store = transaction.objectStore('example-table');
+        const request = store.get(name.value);
+        request.onsuccess = (event) => {
+            log.debug("read ",event.target.result);
+        }
+    }
+
+    document.getElementById('save').addEventListener('click',save);
+    document.getElementById('load').addEventListener('click', load);
+
+</script>
+
+</html>

@@ -12,11 +12,16 @@
             <label><input type="checkbox" id="mouse-listeners" data-type="mouse">Mouse</label>
             <label><input type="checkbox" id="input-listeners" data-type="input">Input</label>
             <label><input type="checkbox" id="key-listeners" data-type="key">Key</label>
+            <label><input type="checkbox" id="click-listeners" data-type="key">Click</label>
         </div>
-        <div id="watch">
+        <div id="watch" style="position:relative">
             <div class="mouseenter">
                 <input type="text" name="name" placeholder="name">
             </div>
+            <div id="inner-block" style='position:absolute; left: 120px; top: 120px; width: 50px; height:75px; background-color: green'>
+                test
+            </div>
+
         </div>
         <div class="log-view">
             <div class="controls">
@@ -43,7 +48,8 @@
         BuildCheckboxListener,
         BuildMouseListener,
         BuildClickListener,
-        BuildInputListener
+        BuildInputListener,
+        Continuation
     } from "../common/event/event.js";
     import { Listeners } from "../common/event/listeners.js";
 
@@ -74,46 +80,105 @@
     
     function logEvent(target, event,handler) {
         log.debug(`event ${event.type} for element `,event.target, `. Handled by `,event.currentTarget);
-        log.debug(handler);
+        log.never(handler);
     }
 
-    const mouseListeners = new Listeners();
+    /* change style on check state */
+        const styleListener = BuildCheckboxListener()
+            .listen("#controls", "label")
+            .onChecked(addStyle)
+            .onUnchecked(removeStyle)
+            .onChecked(logEvent)
+            .build();
 
-    function addStyle(target, event) {
-        target.classList.add("active");
-    }
-
-    function removeStyle(target, event) {
-        target.classList.remove("active");
-    }
-
-
-    function addListeners(type) {
-        if (type == "mouse") {
-            mouseListeners.add(
-                BuildMouseListener().listen('#watch').onMouseMove(() => { log.debug("move"); })
-                    .build()
-            );
+        function addStyle(target, event) {
+            target.classList.add("active");
         }
-    }
 
-    function removeListeners(type) {
-        mouseListeners.removeAll();
-    }
+        function removeStyle(target, event) {
+            target.classList.remove("active");
+        }
+    
+    /* control listeners */
+        const mouseControlListener = BuildCheckboxListener()
+                .listen("#controls", "input[type='checkbox']")
+                .filterAllow((event)=>{
+                    return event.type=='input' && event.target.dataset.type == 'mouse';
+                })
+                .setContinuation(Continuation.Cancel)
+                .onChecked(setupMouseListeners)
+                .onUnchecked(removeMouseListeners)
+                .build();
 
-    const styleListener = BuildCheckboxListener()
+    const controlListener = BuildCheckboxListener()
         .listen("#controls", "input[type='checkbox']")
         .setData((event) => { return event.target.dataset.type; })
         .onChecked(addListeners)
         .onUnchecked(removeListeners)
         .build();
 
-    const labelListener = BuildCheckboxListener()
-        .listen("#controls", "label")
-        .onChecked(addStyle)
-        .onUnchecked(removeStyle)
-        .onChecked(logEvent)
-        .build();
+        
+    /* mouse listeners */
+    const mouseListeners = new Listeners();
+
+    function setupMouseListeners() {
+        log.info("listen to mouse events");
+        mouseListeners.removeAll(); // remove existing listeners
+        mouseListeners.add(
+            BuildMouseListener().listen('#inner-block').onMouseMove(pos => {
+                log.info("inner move", pos)
+            }).build(),
+                        BuildMouseListener().listen('#watch').onMouseMove((pos) => { log.debug("move", pos); return Continuation.Continue; })
+                .build(),
+
+        );
+    }
+
+    function removeMouseListeners(type) {
+        log.info("stop listening to mouse events");
+        mouseListeners.removeAll();
+    }
+
+        /* key listeners */
+            const keyListeners = new Listeners();
+
+        function setupKeyListeners() {
+                log.info("listen to key events");
+                keyListeners.removeAll(); // remove existing listeners
+                keyListeners.add(
+                    BuildKeyListener().listen('#watch')
+                    .onMouseMove(() => { log.debug("move"); })
+                        .build()
+                );
+            }
+
+            function removeKeyListeners(type) {
+                log.info("stop listening to mouse events");
+                keyListeners.removeAll();
+            }
+
+        function addListeners(type) {
+            log.info("listen to  events of type ",type);
+
+                if (type == "mouse") {
+                    log.error("this type should have been filtered out");
+                } else if (type == 'key') {
+                    setupKeyListeners();
+                } else if (type == 'click') {
+                    setupClickListeners();
+                } else if (type == 'input') {
+                    setupInputListeners();
+                }
+            }
+
+            function removeListeners(type) {
+                mouseListeners.removeAll();
+            }
+
+
+
+
+
 
 </script>
 

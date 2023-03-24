@@ -1,0 +1,92 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="../common/css/style.css" />
+    <link rel="stylesheet" href="./style.css" />
+
+</head>
+
+<body>
+    <div id="example">
+        <div id="watch">
+                <input type="text" name="name" placeholder="name">
+        </div>
+        <div class="log-view">
+
+            <div id="LOG-CONTAINER"></div>
+        </div>
+    </div>
+</body>
+
+<script type="module">
+    import { Logger } from "../common/log/logger.js";
+    import { DOMDestination, ConsoleDestination } from "../common/log/log-destination.js";
+    import * as Event from "../common/event/event.js";
+    import {
+        BuildMouseListener
+    } from "../common/event/event.js";
+    import { Listeners } from "../common/event/listeners.js";
+
+    /* Setup logging.
+     * create destinations before any log message to avoid default loggers.
+     */
+    const log = new Logger("Example");
+
+    log.debug("Event example running");
+
+    BuildMouseListener()
+        .listen('#example')
+        .setDebounceMSecs(50)
+        .withCtrl()
+       // .capture()
+    //    .defaultContinuation(Continuation.PreventDefault)
+        .filterAllow(event => { return event.type == 'wheel' || event.clientX < 200; })
+        .filterExclude(event => { return event.type != 'wheel' && event.clientY > 800; })
+        .setData(getDataFromEvent)
+        .onMouseMove(simpleMouseMove)
+        .onMouseDown(mouseDown)
+        .onMouseUp(mouseUp)
+        .onMouseOver(mouseOver)
+        .onMouseOut(mouseOut)
+        .onMouseWheel(mouseWheel)
+        .build();
+
+    function getDataFromEvent(event) {
+        const data = {
+            "horizontal": (event.clientX < 200) ? "left" : "right",
+            "vertical": (event.clientY < 200 ) ? "top": "bottom"
+        };
+        return data;
+    }
+    function simpleMouseMove(data,pos) {
+        log.debug("mouseMove ",data,pos.x,pos.y);
+    }
+
+    function mouseUp(data,pos) {
+        log.debug("mouseUp ",data,pos.x,pos.y);
+    }
+
+    function mouseDown(data,pos) {
+        log.debug("mouseDown ",data,pos.x,pos.y);
+    }
+
+    function mouseOut(data,pos) {
+        log.debug("mouseOut ",data,pos.x,pos.y);
+    }
+
+
+    function mouseOver(data,pos) {
+        log.debug("mouseOver ",data,pos.x,pos.y);
+    }
+
+    function mouseWheel(data,distance) {
+        log.debug("mouseWheel ",data, distance);
+    }
+
+    document.body.addEventListener('wheel',mouseWheel);
+
+
+
+</script>
+
+</html>

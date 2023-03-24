@@ -1,0 +1,27 @@
+<html>
+
+<body>
+    <ul>
+        <li><a href="focus-events/index.html">Focus Events</a></li>
+        <li><a href="logging/index.html">Logging</a></li>
+        <li><a href="grid-sizing/index.html">Grid with drag/drop sizers</a></li>
+    </ul>
+</body>
+
+<script type="module">
+
+    async function succeed() {
+        return new Promise((resolve,reject)=>{
+            setTimeout(()=>{reject('done');},5000);
+        });
+    }
+
+    const good = succeed();
+    good.then((a)=>{
+        alert("success "+a);
+    });
+    good.catch((a)=>{ alert("fail " + a);})
+
+</script>
+
+</html>

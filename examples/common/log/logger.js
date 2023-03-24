@@ -15,6 +15,11 @@ export class Logger {
   getLevel() {
     return this.level;
   }
+  /**
+   * 
+   * @param {*} level 
+   * @param  {...any} text 
+   */
   write(level, ...text) {
     if (this.level.isWanted(level)) {
       const message = new LogMessage(this.name, level, ...text);

@@ -1,8 +1,8 @@
-import { Logger } from "../log/logger.js";
-import { HandlerMethod } from "./handler-method.js";
-import { HandlerBuilder } from "./handler.js";
-import { InputHandler, InputHandlerBuilder } from "./input.js";
-const log = new Logger("CheckboxHandler");
+import { Logger } from '../log/logger.js';
+import { HandlerMethod } from './handler-method.js';
+import { HandlerBuilder } from './handler.js';
+import { InputHandler, InputHandlerBuilder } from './input.js';
+const log = new Logger('CheckboxHandler');
 
 class CheckboxHandler extends InputHandler {
   constructor() {
@@ -16,14 +16,14 @@ class CheckboxHandler extends InputHandler {
   }
   callHandlers(event) {
     const continuation = super.callHandlers(event);
-    if (event.type == "input") {
+    if (event.type == 'input') {
       if (this.getValue(event)) {
         this.onCheckedHandlers.forEach((handler) => {
-          continuation.merge(handler.call(this, event));
+          continuation.replace(handler.call(this, event));
         });
       } else {
         this.onUncheckedHandlers.forEach((handler) => {
-          continuation.merge(handler.call(this, event));
+          continuation.replace(handler.call(this, event));
         });
       }
     }
@@ -38,13 +38,13 @@ class CheckboxHandlerBuilder extends InputHandlerBuilder {
 
   onChecked(...handler) {
     this.eventHandler.onCheckedHandlers.push(
-      new HandlerMethod(...handler, "onChecked")
+      new HandlerMethod(...handler, 'onChecked')
     );
     return this;
   }
   onUnchecked(...handler) {
     this.eventHandler.onUncheckedHandlers.push(
-      new HandlerMethod(...handler, "onUnchecked")
+      new HandlerMethod(...handler, 'onUnchecked')
     );
     return this;
   }
