@@ -3,23 +3,62 @@
         <link rel="stylesheet" href="../common/css/style.css" />
         <link rel="stylesheet" href="./style.css" />
     <style>
-    #example {
-        padding: 4em;
+    #example,html,body {
+        padding: 0px;
+    }
+    h1 {
+        border-bottom: 1px solid black;
+        margin: 0;
+        position: fixed;
+        background: white;
+        width: 100%;
+        height: 1.5em;
+        top: 0;
+    }
+
+    .messages {
+        margin-top: 3em;
+    }
+
+    .messages span {
+        margin-right: 8px;
+    }
+    .messages span:after{
+        content: "|";
+        margin-left: 4px;
+        color: #777;
+    }
+
+    .messages span:last-child:after {
+        content: "";
     }
 
     </style>
     </head>
 
     <body>
+            <h1>Log <a href='#' id='clear-messages'>clear</a></h1>
         <div id="example">
-            <div>
-           log
+            <div class="messages">
+           
             </div>
         </div>
     </body>
     </html>
     <script type="module">
         import { createChildWindow } from './child-windows.js';
+        const messages = document.body.querySelector('.messages');
 
+        function clearMessages(){
+            messages.replaceChildren();
+        }
+        document.getElementById('clear-messages').addEventListener('click',clearMessages);
+
+        function scroll() {
+            const m = document.body.querySelector('.messages');
+            m.scrollTop = m.clientHeight;
+            setTimeout(scroll,1000);
+        }
+        setTimeout(scroll,1000);
     </script>
 </html>

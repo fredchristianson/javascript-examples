@@ -11,6 +11,18 @@ class ChildWindow extends BrowserWindow {
     constructor(name, url) {
         super();
         this._name = name;
+        this._messageHandler = null;
+        this._window = null;
+    }
+
+    setMessageHandler(handler) {
+        this._window.addEventListener('message', handler);
+    }
+
+    getBody() { return this._window.document.body; }
+
+    querySelector(selector) {
+        return this._window.document.body.querySelector(selector);
     }
 
     async open(url) {
@@ -19,6 +31,7 @@ class ChildWindow extends BrowserWindow {
             url,
             this._name,
             'toolbar=false,resizeable=yes');
+        this._window = child;
         return new Promise((resolve, reject) => {
             child.addEventListener('load', async () => {
                 this.setWindow(child);

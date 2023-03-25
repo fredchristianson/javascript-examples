@@ -3,8 +3,25 @@
         <link rel="stylesheet" href="../common/css/style.css" />
         <link rel="stylesheet" href="./style.css" />
     <style>
+    body, html {
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+    }
     #example {
-        padding: 4em;
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        background-color: black;
+        color: blue;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .draw-text {
+        display: inline-block;
+        font-size: 32px;
     }
 
     </style>
@@ -12,8 +29,8 @@
 
     <body>
         <div id="example">
-            <div>
-           draw
+            <div class="draw-text">
+           enter some text
             </div>
         </div>
     </body>

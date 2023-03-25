@@ -25,15 +25,42 @@
     </html>
     <script type="module">
         import { createChildWindow } from './child-windows.js';
-        let logWindow = null;
+        import { createLogger, createLogManager } from './logger.js';
+        const logManager = await createLogManager();
+        let log = createLogger("Main");
+        log.debug("Running");
         let controlWindow = null;
         let drawWindow = null;
 
         const stopButton = document.getElementById('stop');
         const startButton = document.getElementById('start');
 
+        function rotateText(event) {
+            const value = event.target.value-180;
+            log.info(`rotate: ${value}`);
+
+            const textElement = drawWindow.querySelector('.draw-text');
+            const transform = `rotate(${value}deg)`;
+            textElement.style.transform = transform;
+
+        }
+
+        function changeText(event) {
+            const value = event.target.value;
+            log.info(`change text: ${value}`);
+            const textElement = drawWindow.querySelector('.draw-text');
+            textElement.innerText = value;
+        }
+
+        function createControlListeners(){
+            controlWindow.querySelector(`input[name='rotation']`)
+                        .addEventListener('input',rotateText);
+            controlWindow.querySelector(`input[name='text']`)
+                        .addEventListener('input', changeText);
+        }
+
         function closeWindows() {
-            logWindow?.close();
+            log.info("close windows");
             controlWindow?.close();
             drawWindow?.close();
             startButton.parentElement.classList.remove('hide');
@@ -41,9 +68,10 @@
         }
 
         async function openWindows() {
-            logWindow = await createChildWindow("log","log.html");
+            log.info("open windows");
             controlWindow = await createChildWindow("controw", "control.html");
             drawWindow = await createChildWindow("draw", "draw.html");
+            createControlListeners();
             startButton.parentElement.classList.add('hide');
             stopButton.parentElement.classList.remove('hide');
         }
@@ -58,7 +86,7 @@
         });
 
         window.addEventListener('beforeunload', () => {
-               logWindow?.close();
+               logManager?.close();
                controlWindow?.close();
                drawWindow?.close();
             });
