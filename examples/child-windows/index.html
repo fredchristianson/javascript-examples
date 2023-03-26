@@ -26,6 +26,8 @@
     <script type="module">
         import { createChildWindow } from './child-windows.js';
         import { createLogger, createLogManager } from './logger.js';
+
+await createChildWindow('./foo.html','test');
         const logManager = await createLogManager();
         let log = createLogger("Main");
         log.debug("Running");
@@ -69,8 +71,8 @@
 
         async function openWindows() {
             log.info("open windows");
-            controlWindow = await createChildWindow("controw", "control.html");
-            drawWindow = await createChildWindow("draw", "draw.html");
+            controlWindow = await createChildWindow("Control", "control.html");
+            drawWindow = await createChildWindow("Draw", "draw.html");
             createControlListeners();
             startButton.parentElement.classList.add('hide');
             stopButton.parentElement.classList.remove('hide');
