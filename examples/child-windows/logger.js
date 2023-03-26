@@ -20,7 +20,9 @@ class LogManager {
         const div = this._domParser.parseFromString(html, 'text/html');
         this._messages.append(div.body.childNodes[0]);
         const logWindowBody = this._logWindow.getBody();
-        logWindowBody.scrollTop = logWindowBody.clientHeight;
+        if (logWindowBody) {
+            logWindowBody.scrollTop = logWindowBody.offsetHeight;
+        }
     }
 
     close() {

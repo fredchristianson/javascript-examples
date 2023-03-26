@@ -1,3 +1,5 @@
+import { createLogger } from "./logger.js";
+const log = createLogger("Window");
 
 
 /**
@@ -23,8 +25,8 @@ const openerWindow = window;
 class BrowserWindow {
     constructor() {
         this._window = null;
-        this._onClose = null;
-        this._messageHandler = null;
+        this._callOnClose = null;
+        this._callOnMessage = null;
     }
 
     setWindow(w) {
@@ -38,38 +40,39 @@ class BrowserWindow {
     }
 
 
-    getBody() { return this._window.document.body; }
+    getBody() { return this._window?.document?.body; }
 
     querySelector(selector) {
-        return this._window.document.body.querySelector(selector);
+        return this._window?.document?.body?.querySelector(selector);
     }
 
     setCloseHandler(handler) {
-        this._onClose = handler;
+        this._callOnClose = handler;
     }
 
     setMessageHandler(handler) {
-        this._onClose = handler;
+        this._callOnMessage = handler;
     }
 
     _onBeforeUnloadHandler(event) {
-        if (this._onClose) {
-            this._onClose();
+        if (this._callOnClose) {
+            this._callOnClose();
         }
     }
 
     _messageHandler(event) {
-        if (this._messageHandler) {
-            this._messageHandler(event.data);
+        if (this._callOnMessage) {
+            this._callOnMessage(event.data);
         }
     }
 
 }
 
 class ChildWindow extends BrowserWindow {
-    constructor(name, url) {
+    constructor(name) {
         super();
         this._name = name;
+
         this._childWindow = null;
     }
 
@@ -79,10 +82,11 @@ class ChildWindow extends BrowserWindow {
         // the target can't have whitespace
         const target = this._name.replaceAll(/[ \t\n]+/g, '');
         const features = this._createFeatures();
+        log.debug("create window features " + features);
         const child = window.open(
             url,
             target,
-            'toolbar=false,resizeable=yes');
+            features);
         this._childWindow = child;
 
         return new Promise((resolve, reject) => {
@@ -106,12 +110,13 @@ class ChildWindow extends BrowserWindow {
     }
 
     _createFeatures() {
+        let values = ["popup=true"];
         try {
             const position = localStorage.getItem(`child-window-position-${this._name}`);
             if (position !== null && typeof position == 'string') {
+                values = []; // no popup if we have a position
                 // pos
-                const pos = JSON.parse(value);
-                const values = [];
+                let pos = JSON.parse(position);
                 if (typeof pos.left == 'number') {
                     values.push(`left=${pos.left}`);
                 }
@@ -124,17 +129,19 @@ class ChildWindow extends BrowserWindow {
                 if (typeof pos.height == 'number') {
                     values.push(`height=${pos.height}`);
                 }
-
             }
         } catch (ex) {
             // ignore exceptions (invalid JSON position in localStorage)
+            log.error("cannot parse position " + ex.message);
+            console.log(ex);
         }
-        // return "popup=true" if no localStorage or exception
-        return "popup=true";
+
+        return values.join(',');
     }
 
 
     close() {
+        log.debug(`closing window ${this._name}`);
         this._saveScreenPosition();
         this._childWindow?.close();
         this._window = null;
@@ -182,12 +189,12 @@ class ChildWindow extends BrowserWindow {
          */
         const x = this._window.screenX;
         const y = this._window.screenY;
-        const w = this._window.outerWidth;
-        const h = this._window.outerHeight;
+        const w = this._window.innerWidth;
+        const h = this._window.innerHeight;
         if (w > 0 && h > 0) {
             const pos = { left: x, top: y, width: w, height: h };
             const value = JSON.stringify(pos);
-            //console.log(`save screen postion ${value}`);
+            log.debug(`save screen postion ${value}`);
             localStorage.setItem(`child-window-position-${this._name}`, value);
         }
     }
@@ -200,6 +207,14 @@ class ParentWindow extends BrowserWindow {
     }
 }
 
+const defaultChildWindowFeatures = {
+    menubar: true,
+    toolbar: true,
+    location: true,
+    status: true,
+    resizable: true,
+    scrollbars: true
+};
 
 export async function createChildWindow(name, url) {
     const child = new ChildWindow(name);
@@ -208,6 +223,7 @@ export async function createChildWindow(name, url) {
         return child;
     } catch (ex) {
         alert(`Error openening url ${url}.  Are popup windows blocked?`);
+        console.log(ex);
         return null;
     }
 }
