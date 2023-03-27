@@ -16,7 +16,7 @@ class ParentWindow extends BrowserWindow {
 export function getParentWindow() {
     if (namespace.parent == null) {
         namespace.parent = new ParentWindow(openerWindow);
-        namespace.parent.setWindow(openerWindow);
+        namespace.parent._setWindow(openerWindow);
 
     }
 

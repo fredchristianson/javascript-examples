@@ -32,11 +32,9 @@ export class BrowserWindow {
         this._body = null;
     }
 
-    setWindow(w) {
+    _setWindow(w) {
         this._window = w;
         if (this._window != null) {
-            this._window.addEventListener('beforeunload',
-                this._onBeforeUnloadHandler.bind(this));
             this._window.addEventListener('message',
                 this._messageHandler.bind(this));
             this._dodument = this._window.document;
@@ -60,10 +58,10 @@ export class BrowserWindow {
     }
 
 
-    _onBeforeUnloadHandler(event) {
+    _callCloseHandlers() {
         for (let handler of this._callOnClose) {
             try {
-                this._callOnClose();
+                handler();
             } catch (ex) {
                 log.error(`onCloseHandler failed ${ex.message}`);
             }
@@ -74,7 +72,7 @@ export class BrowserWindow {
     _messageHandler(event) {
         for (let handler of this._callOnMessage) {
             try {
-                this.handler();
+                handler(event.data);
             } catch (ex) {
                 log.error(`onMessageHandler failed ${ex.message}`);
             }
@@ -101,6 +99,7 @@ export function addChild(child) {
 }
 
 export function removeChild(child) {
+    child._callCloseHandlers();
     const children = namespace.children || [];
     const index = children.indexOf(child);
     if (index >= 0) {

@@ -1,23 +1,55 @@
+/** @fileoverview  use the function createChildWindow() to 
+ * open a new window.  It is an async function that waits
+ * until the window is loaded and sets up some listeners
+*/
 import { createLogger } from "./logger.js";
 import { BrowserWindow, addChild, removeChild } from "./window-manager.js";
-const log = createLogger("Window");
+const log = createLogger("ChildWindow");
 
 
+/**
+ * createChildWindow() creates one of these objects.
+ * 
+ * open() must be called to create the window.
+ *
+ * @extends {BrowserWindow}
+ * 
+ */
 class ChildWindow extends BrowserWindow {
+    /**
+     * Creates an instance of ChildWindow.
+     *
+     * @constructor
+     * @param {String} name the name the parent uses for this window
+     * it is used to generate a browser "target" for the new window and 
+     * as the title for the window.  If the "target" window exists, it may be reused.
+     * The name is also used to save/restore the window's location
+     */
     constructor(name) {
         super();
         this._name = name;
 
         this._childWindow = null;
+        this._closing = false;
+        this._url = null;
     }
 
 
+    /**
+     * use window.open() to create a new browser window and load a url
+     *
+     * @async
+     * @param {string} url the url to open
+     * @returns {Promise} a promise to wait for the url load to finish
+     */
     async open(url) {
         await this._checkMultipleScreenPermission();
         // the target can't have whitespace
+        this._url = url;
         const target = this._name.replaceAll(/[ \t\n]+/g, '');
         const features = this._createFeatures();
         log.debug("create window features " + features);
+        this._closing = false;
         const child = window.open(
             url,
             target,
@@ -30,16 +62,17 @@ class ChildWindow extends BrowserWindow {
                 reject();
             }
             child.addEventListener('error', async (_event) => {
+                // this is not an HTTP error, but an error in the
+                // initializing of the new page (i.e. javascript error on the page)
                 child.document.title = this._name;
                 reject();
             });
             child.addEventListener('load', async (_event) => {
-                // add spaces to "hide" extra info browsers may add (e.g. "Google Chrom");
                 child.document.title = this._name;
-                this.setWindow(child);
+                this._setWindow(child);
                 this._loadScreenPosition();
                 addChild(this);
-                child.addEventListener("onbeforeunload", () => {
+                child.addEventListener("beforeunload", () => {
                     removeChild(this);
                 });
 
@@ -49,6 +82,29 @@ class ChildWindow extends BrowserWindow {
         });
     }
 
+    /**
+     * The app can call this to re-open the window if the user has
+     * closed it.
+     *
+     * @async
+     * @returns {*}
+     */
+    async ensureOpen() {
+        if (this._childWindow == null || this._childWindow.closed) {
+            await this.open(this._url);
+        }
+    }
+
+    /**
+     * The 3rd parameter of window.open is a string of features.  
+     * If we have saved the window's position before set the 
+     * top/left/width/height features.
+     * Otherwise set the "popup=true" feature and the browser will 
+     * set the position.  If it is not a popup, it will probably
+     * be a new tab instead of new window.
+     *
+     * @returns {*}
+     */
     _createFeatures() {
         let values = ["popup=true"];
         try {
@@ -80,13 +136,31 @@ class ChildWindow extends BrowserWindow {
     }
 
 
+    /**
+     * close() is called to close the browser window
+     */
     close() {
+        if (this._closing) {
+            return; // already closing.  
+        }
         log.debug(`closing window ${this._name}`);
+        this._closing = true;
         this._saveScreenPosition();
         this._childWindow?.close();
         this._window = null;
     }
 
+
+    /**
+     * On chrome, we need to ask the user for permission to restore
+     * a window's position on a display other than where the main window is.
+     * 
+     * This only needs to be done the first time a new window is created and
+     * only if window.getScreenDetails() exists.
+     * 
+     * @returns {Promise} a promise that will be resolved after the user grants
+     * or denies permission to restore positions on multiple displays
+     */
     _checkMultipleScreenPermission() {
         if (!('getScreenDetails' in window)) {
             return true;
@@ -105,6 +179,12 @@ class ChildWindow extends BrowserWindow {
         });
     }
 
+
+    /**
+     * If a position has been saved in localStorage, it is used to 
+     * move the window.  This should not be needed since it is
+     * set with features in window.open()
+     */
     _loadScreenPosition() {
 
         const value = localStorage.getItem(`child-window-position-${this._name}`);
@@ -117,6 +197,11 @@ class ChildWindow extends BrowserWindow {
         }
     }
 
+    /**
+     * Save the curren screen position in localStorage.
+     * This is called on the event "beforeunload" to restore
+     * the last location when it is opened again
+     */
     _saveScreenPosition() {
         if (this._window == null || this._window.closed) {
             return;
@@ -140,22 +225,16 @@ class ChildWindow extends BrowserWindow {
     }
 }
 
-class ParentWindow extends BrowserWindow {
-    constructor() {
-        super();
-        _setWindow(window.opener);
-    }
-}
 
-const defaultChildWindowFeatures = {
-    menubar: true,
-    toolbar: true,
-    location: true,
-    status: true,
-    resizable: true,
-    scrollbars: true
-};
-
+/**
+ * Create a new ChildWindow and wait for it to load
+ *
+ * @export
+ * @async
+ * @param {String} name of the child windo
+ * @param {String} url to load
+ * @returns {ChildWindow} the ChildWindow object to access the new window
+ */
 export async function createChildWindow(name, url) {
     const child = new ChildWindow(name);
     try {

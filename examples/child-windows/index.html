@@ -4,7 +4,7 @@
         <link rel="stylesheet" href="./style.css" />
     <style>
     #example {
-        padding: 4em;
+        padding: 1em;
     }
 
     </style>
@@ -12,6 +12,17 @@
 
     <body>
         <div id="example">
+            <div>
+                <p>This is an exmple of creating child windows.</p>
+                <p>2 child windows are created when you click Start</p>
+                <p>You can use the slider and text input in the Control window
+                    to change the text displayed in the Draw window.
+                </p>
+                <p>This window listens to Control elements and updates Draw elements.</p>
+                <p>Child window positions are saved and restored.</p>
+                <p>When either window is closed manually, the other is also closed.</p>
+                <p>There is a simple example at <a href='../child-windows-simple/index.html'>more advanced example.</a></p>
+            </div>
             <div>
                 <div>Press start to create windows</div>
                 <button id="start">Start</button>
@@ -29,6 +40,7 @@
         import { createChildWindow } from './child-windows.js';
         import { createLogger } from './logger.js';
         import {createLogManager } from './log-manager.js';
+
 
         const logManager = await createLogManager();
         let log = createLogger("Main");
@@ -83,6 +95,8 @@
             startButton.parentElement.classList.add('hide');
             stopButton.parentElement.classList.remove('hide');
 
+            drawWindow.addCloseHandler(closeWindows);
+            controlWindow.addCloseHandler(closeWindows);
         }
 
         startButton.addEventListener('click',()=>{
@@ -94,10 +108,17 @@
             closeWindows();
         });
 
-        window.addEventListener('beforeunload', () => {
-            //    logManager?.close();
-            //    controlWindow?.close();
-            //    drawWindow?.close();
+        window.addEventListener('xbeforeunload', () => {
+            try {
+                console.log('closing');
+                logManager?.close();
+                controlWindow?.close();
+                drawWindow?.close();
+                console.log('child windows closed');
+                return true;
+            } catch (ex) {
+                console.log("cannot close windows ",ex);
+            }
             });
 
 
