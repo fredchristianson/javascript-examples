@@ -5,7 +5,7 @@ export const LOGLEVEL = {
     DEBUG: 3
 };
 
-let _logManager = null;
+
 
 class LogCreator {
     constructor(name, level = LOGLEVEL.DEBUG) {
@@ -36,28 +36,31 @@ class LogCreator {
     }
 
     sendMessage(message, level) {
-        if (window.opener == null && _logManager == null) {
-            // if _logManager is not initialized we can only write to the console.
-            console.log(message);
-        } else {
+
+        if (window.opener) {
+
             const data = {
                 message,
                 time: new Date(),
                 logger: this._name,
                 level: level
             };
-            if (window.opener) {
-                window.opener.postMessage(data, '*');
-            } else {
-                window.postMessage(data, '*');
-            }
+            window.opener.postMessage(data, '*');
+        } else {
+            console.log(message);
         }
+
     }
 }
 
-export function setLogManager(logManager) {
-    _logManager = logManager;
+// if this is the main window, listen for message events
+if (window.opener == null) {
+    addEventListener("message", event => {
+        const data = event.data;
+        console.log(data.message);
+    });
 }
+
 export function createLogger(name) {
     return new LogCreator(name);
 }

@@ -236,8 +236,10 @@ class ChildWindow extends BrowserWindow {
  * @returns {ChildWindow} the ChildWindow object to access the new window
  */
 export async function createChildWindow(name, url) {
+    console.log("create child window " + name);
     const child = new ChildWindow(name);
     try {
+        console.log("open url " + url);
         await child.open(url);
         return child;
     } catch (ex) {

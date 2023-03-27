@@ -41,6 +41,7 @@
         import { createLogger } from './logger.js';
         import {createLogManager } from './log-manager.js';
 
+        alert("The can be problems reinitializing when the page is refreshed.  Open in a new window if it doesn't work.");
 
         const logManager = await createLogManager();
         let log = createLogger("Main");
@@ -108,7 +109,7 @@
             closeWindows();
         });
 
-        window.addEventListener('xbeforeunload', () => {
+        window.addEventListener('beforeunload', () => {
             try {
                 console.log('closing');
                 logManager?.close();
