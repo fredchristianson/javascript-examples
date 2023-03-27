@@ -40,16 +40,21 @@
         import { createChildWindow } from './child-windows.js';
         import { createLogger } from './logger.js';
         let log = createLogger("Main");
-        log.debug("Running");
-        log.info("info message");
-        log.warn("warn message");
-        log.error("error message");
+       
+        // these will be set after "start" is pressed
         let controlWindow = null;
         let drawWindow = null;
 
+        // the start and stop buttons
         const stopButton = document.getElementById('stop');
         const startButton = document.getElementById('start');
 
+        
+        // the event handler for changes to the rotation slider 
+        // in the control window.  
+        //
+        // when the slider changes, the element in the draw window
+        // is changed
         function rotateText(event) {
             const value = event.target.value-180;
             log.info(`rotate: ${value}`);
@@ -60,6 +65,11 @@
 
         }
 
+        // the event handler for changes to the text input
+        // in the control window.  
+        //
+        // when the text changes, the element in the draw window
+        // is changed
         function changeText(event) {
             const value = event.target.value;
             log.info(`change text: ${value}`);
@@ -67,6 +77,7 @@
             textElement.innerText = value;
         }
 
+        // listen to events in the control window DOM
         function createControlListeners(){
             controlWindow.querySelector(`input[name='rotation']`)
                         .addEventListener('input',rotateText);
@@ -74,6 +85,7 @@
                         .addEventListener('input', changeText);
         }
 
+        // close the child windows and enable the start button
         function closeWindows() {
             log.info("close windows");
             controlWindow?.close();
@@ -82,6 +94,10 @@
             stopButton.parentElement.classList.add('hide');
         }
 
+        // open the child windows.
+        // listen to events in the control window.
+        // enable the stop button
+        // listen to close events and close both windows
         async function openWindows() {
             log.info("open windows");
 
@@ -104,10 +120,10 @@
             closeWindows();
         });
 
+        // listen to 'beforeunload' and close open child windows
         window.addEventListener('beforeunload', () => {
             try {
                 console.log('closing');
-                logManager?.close();
                 controlWindow?.close();
                 drawWindow?.close();
                 console.log('child windows closed');

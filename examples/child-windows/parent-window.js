@@ -1,9 +1,17 @@
 import { namespace } from './child-window-namespace.js';
-import { globalWindow, openerWindow, BrowserWindow } from './window-manager.js';
+import { BrowserWindow } from './window-manager.js';
 
 import { createLogger } from "./logger.js";
 const log = createLogger("Window");
 
+/**
+ * Gives a child window access to it's parent's DOM for manipulation
+ * and listening to events
+ *
+ * @class ParentWindow
+ * @typedef {ParentWindow}
+ * @extends {BrowserWindow}
+ */
 class ParentWindow extends BrowserWindow {
     constructor() {
         super();
@@ -13,10 +21,15 @@ class ParentWindow extends BrowserWindow {
 
 }
 
+/**
+ * Return the ParentWindow if it has already been created.  Create it if needed.
+ *
+ * @returns {ParentWindow}
+ */
 export function getParentWindow() {
     if (namespace.parent == null) {
-        namespace.parent = new ParentWindow(openerWindow);
-        namespace.parent._setWindow(openerWindow);
+        namespace.parent = new ParentWindow(window.opener);
+        namespace.parent._setWindow(window.opener);
 
     }
 

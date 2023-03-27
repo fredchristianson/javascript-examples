@@ -22,19 +22,31 @@
            <div>
             <label>Text <input type='text' name='text' value="Developer Relief" placeholder="Enter some text" /></label>
             </div>
+            <p>The main window has addEventListener() to the slider and text inputs.  It will update the drawing window as they change.</p>
+            <p>As the rotation changes, javascript in this window updates the parent windows DOM with the new value.</p>
+            <p>Changes to the text input will be sent to the main window with window.opener.postMessage() and logged to the console there.</p>
         </div>
     </body>
     </html>
     <script type="module">
+        // ParentWindow provides access to window.opener (the parent).
+        // us it to the the status element for this window
         import { getParentWindow } from './parent-window.js';
         import { createLogger} from './logger.js';
         const log = createLogger("Control");
         const parentWindow = getParentWindow();
+
+        // get the .control-window-status element in the parent
         const status = parentWindow.querySelector('.control-window-status');
         status.innerHTML = 'Control window running.';
 
-        document.body.querySelector('[name="text"]').addEventListener('input',()=>{
-            log.debug("text change");
-        })
+        document.body.querySelector('[name="text"]').addEventListener('input',(event)=>{
+            log.debug(`text change: ${event.target.value}`);
+        });
+
+        document.body.querySelector('[name="rotation"]').addEventListener('input', (event) => {
+            status.innerHTML = `Control window running.  Rotation=${event.target.value}`;
+        });
+        
     </script>
 </html>

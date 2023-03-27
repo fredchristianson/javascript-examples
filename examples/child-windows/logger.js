@@ -7,35 +7,82 @@ export const LOGLEVEL = {
 
 
 
-class LogCreator {
+/**
+ * write a log message to the console of the main windows.  Child windows use 
+ * window.opener.postMessage to send the message to the main window.
+ * 
+ * The main window listens for "message" events and writes the message
+ *
+ * @class Logger
+ * @typedef {Logger}
+ */
+class Logger {
+    /**
+     * Creates an instance of Logger.
+     *
+     * @constructor
+     * @param {ScrollSetting} name - name of the module logging a message
+     * @param {number} [level=LOGLEVEL.DEBUG] - level of messages wanted (DEBUG,INFO,WARN,ERROR)
+     */
     constructor(name, level = LOGLEVEL.DEBUG) {
         this._name = name;
         this._level = level;
     }
 
+    /**
+     * write a debug level message
+     *
+     * @param {String} message
+     */
     debug(message) {
         if (this._level >= LOGLEVEL.DEBUG) {
-            this.sendMessage(message, "debug");
+            this.writeMessage(message, "debug");
         }
     }
 
+
+    /**
+     * write an info level message
+     *
+     * @param {String} message
+     */
     info(message) {
         if (this._level >= LOGLEVEL.INFO) {
-            this.sendMessage(message, "info");
+            this.writeMessage(message, "info");
         }
     }
 
+
+    /**
+     * write a warn level message
+     *
+     * @param {String} message
+     */
     warn(message) {
         if (this._level >= LOGLEVEL.WARN) {
-            this.sendMessage(message, "warn");
+            this.writeMessage(message, "warn");
         }
     }
 
+
+    /**
+     * write an error level message
+     *
+     * @param {String} message
+     */
     error(message) {
-        this.sendMessage(message, "error");
+        this.writeMessage(message, "error");
     }
 
-    sendMessage(message, level) {
+    /**
+     * Write the message to the javascript console if this is the main window.
+     * 
+     * Post the message to the main window if this is a chile window.
+     *
+     * @param {*} message
+     * @param {*} level
+     */
+    writeMessage(message, level) {
 
         if (window.opener) {
 
@@ -61,6 +108,13 @@ if (window.opener == null) {
     });
 }
 
+/**
+ * Create a Logger to write messages for a module
+ *
+ * @export
+ * @param {String} name of the module logging messages
+ * @returns {Logger}
+ */
 export function createLogger(name) {
-    return new LogCreator(name);
+    return new Logger(name);
 }
