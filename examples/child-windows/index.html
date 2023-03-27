@@ -39,11 +39,6 @@
     <script type="module">
         import { createChildWindow } from './child-windows.js';
         import { createLogger } from './logger.js';
-        import {createLogManager } from './log-manager.js';
-
-        alert("The can be problems reinitializing when the page is refreshed.  Open in a new window if it doesn't work.");
-
-        const logManager = await createLogManager();
         let log = createLogger("Main");
         log.debug("Running");
         log.info("info message");

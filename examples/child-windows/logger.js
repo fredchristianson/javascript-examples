@@ -47,7 +47,7 @@ class LogCreator {
             };
             window.opener.postMessage(data, '*');
         } else {
-            console.log(message);
+            console.log(`${(new Date()).toLocaleTimeString()} ${level} : ${this._name} : ${message}`);
         }
 
     }
@@ -57,7 +57,7 @@ class LogCreator {
 if (window.opener == null) {
     addEventListener("message", event => {
         const data = event.data;
-        console.log(data.message);
+        console.log(`${data.time.toLocaleTimeString()} ${data.level} : ${data.logger} : ${data.message}`);
     });
 }
 
