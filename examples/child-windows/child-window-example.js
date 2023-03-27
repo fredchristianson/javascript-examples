@@ -1,13 +1,9 @@
 
-import { createChildWindow } from './child-windows.js';
-import { createLogger } from './logger.js';
-import { createLogManager } from './log-manager.js';
-
 
 export async function run() {
-    const createChildWindow = await import('./child-window.js');
-    const createLogger = await import('./logger.js');
-    const createLogManager = await import('./log-manager.js');
+    const createChildWindow = (await import('./child-windows.js')).createChildWindow;
+    const createLogger = (await import('./logger.js')).createLogger;
+    const createLogManager = (await import('./log-manager.js')).createLogManager;
     const logManager = await createLogManager();
     let log = createLogger("Main");
     log.debug("Running");
