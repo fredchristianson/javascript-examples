@@ -16,7 +16,9 @@ class LogManager {
     handleMessage(event) {
         const data = event.data;
         console.debug(`${data.time.toLocaleTimeString()}: ${data.level} : ${data.logger} : ${data.message}`);
-        const html = `<div><span>${data.time.toLocaleTimeString()}</span><span>${data.level}</span><span>${data.logger}</span><span>${data.message}</span></div>`;
+        const html = `<div class='log ${data.level}'><span class='time'>${data.time.toLocaleTimeString()}</span>` +
+            `<span class='level'>${data.level}</span><span class='module'>${data.logger}</span>` +
+            `<span class='message'>${data.message}</span></div >`;
         const div = this._domParser.parseFromString(html, 'text/html');
         this._messages.append(div.body.childNodes[0]);
         const logWindowBody = this._logWindow.getBody();

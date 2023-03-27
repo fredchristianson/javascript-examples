@@ -30,6 +30,9 @@
         const logManager = await createLogManager();
         let log = createLogger("Main");
         log.debug("Running");
+        log.info("info message");
+        log.warn("warn message");
+        log.error("error message");
         let controlWindow = null;
         let drawWindow = null;
 
