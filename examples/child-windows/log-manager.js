@@ -14,6 +14,11 @@ class LogManager {
 
     }
 
+    /**
+     * ~
+     *
+     * @param {*} event
+     */
     handleMessage(event) {
         const data = event.data;
         console.debug(`${data.time.toLocaleTimeString()}: ${data.level} : ${data.logger} : ${data.message}`);

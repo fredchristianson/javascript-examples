@@ -1,0 +1,100 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="../common/css/style.css" />
+        <link rel="stylesheet" href="./style.css" />
+    <style>
+    #example {
+        padding: 4em;
+    }
+
+    </style>
+    </head>
+
+    <body>
+        <div id="example">
+            <div>
+                <p>This is a simple exmple of creating child windows.</p>
+                <p>2 child windows are created when you click Run</p>
+                <p>You can use the slider and text input in the Control window 
+                    to change the text displayed in the Draw window.
+                </p>
+                <p>This window listens to Control elements and updates Draw elements.</p>
+                <p>There is a <a href='../child-windows/index.html'>more advanced example.</a></p>
+            </div>
+            <button id="run">Run</button>
+        </div>
+    </body>
+    </html>
+    <script type="module">
+        // variables to hold the child windows we create
+        let controlWindow = null;
+        let drawWindow = null;
+
+        // the run button for the user to press
+        const runButton = document.getElementById('run');
+
+        // This is the event handler for changes to the slider 
+        // in the control window.
+        //
+        // It gets the value from the <input> and rotates text
+        // in the draw window.
+        function rotateText(event) {
+            const value = event.target.value-180;
+
+            const textElement = drawWindow.document.body.querySelector('.draw-text');
+            const transform = `rotate(${value}deg)`;
+            textElement.style.transform = transform;
+
+        }
+
+        // This is the event handler for changes to the text 
+        // input in the control window.
+        //
+        // It gets the value from the <input> and sets
+        // the innerText of an element in the Draw window.
+        function changeText(event) {
+            const value = event.target.value;
+            const textElement = drawWindow.document.body.querySelector('.draw-text');
+            textElement.innerText = value;
+        }
+
+        // This is called after the controlWindow is loaded.  There 
+        // are no elements we can listen to until "load" is complete.
+        function createControlListeners(){
+            const body = controlWindow.document.body;
+            body.querySelector(`input[name='rotation']`)
+                        .addEventListener('input',rotateText);
+            body.querySelector(`input[name='text']`)
+                        .addEventListener('input', changeText);
+        }
+
+
+
+        // create the 2 child windows when user presses "Run" button.
+        // 
+        // create an event listener for the control window's "load".
+        // after it is loaded, we can attach event listeners to elements in it.
+        async function openWindows() {
+            controlWindow = window.open('control.html', 'Control', "top=100,left=0,width=400,height=400");
+            controlWindow.addEventListener('load',createControlListeners);
+            drawWindow = window.open('draw.html', 'Draw', "top=600,left=500,width=400,height=400");
+
+        }
+
+        // start everything when the user presses "Run"
+        runButton.addEventListener('click',()=>{
+            openWindows();
+            runButton.style.display = 'none';
+        });
+
+        
+        // close the child windows when the main window is closed.
+        window.addEventListener('beforeunload', () => {
+            controlWindow?.close();
+            drawWindow?.close();
+        });
+
+
+
+    </script>
+</html>
