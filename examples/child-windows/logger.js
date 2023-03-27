@@ -1,43 +1,11 @@
-import { createChildWindow } from "./child-windows.js";
-
-class LogManager {
-    constructor() {
-        this._logWindow = null;
-        this._domParser = new DOMParser();
-    }
-
-    async open() {
-        this._logWindow = await createChildWindow('log', 'log.html');
-        this._messages = this._logWindow.querySelector('.messages');
-        window.addEventListener('message', this.handleMessage.bind(this));
-
-    }
-
-    handleMessage(event) {
-        const data = event.data;
-        console.debug(`${data.time.toLocaleTimeString()}: ${data.level} : ${data.logger} : ${data.message}`);
-        const html = `<div class='log ${data.level}'><span class='time'>${data.time.toLocaleTimeString()}</span>` +
-            `<span class='level'>${data.level}</span><span class='module'>${data.logger}</span>` +
-            `<span class='message'>${data.message}</span></div >`;
-        const div = this._domParser.parseFromString(html, 'text/html');
-        this._messages.append(div.body.childNodes[0]);
-        const logWindowBody = this._logWindow.getBody();
-        if (logWindowBody) {
-            logWindowBody.scrollTop = logWindowBody.offsetHeight;
-        }
-    }
-
-    close() {
-        this._logWindow?.close();
-    }
-}
-
 export const LOGLEVEL = {
     ERROR: 0,
     WARN: 1,
     INFO: 2,
     DEBUG: 3
 };
+
+let _logManager = null;
 
 class LogCreator {
     constructor(name, level = LOGLEVEL.DEBUG) {
@@ -68,28 +36,28 @@ class LogCreator {
     }
 
     sendMessage(message, level) {
-        const data = {
-            message,
-            time: new Date(),
-            logger: this._name,
-            level: level
-        };
-        if (window.opener) {
-            window.opener.postMessage(data, '*');
+        if (window.opener == null && _logManager == null) {
+            // if _logManager is not initialized we can only write to the console.
+            console.log(message);
         } else {
-            window.postMessage(data, '*');
+            const data = {
+                message,
+                time: new Date(),
+                logger: this._name,
+                level: level
+            };
+            if (window.opener) {
+                window.opener.postMessage(data, '*');
+            } else {
+                window.postMessage(data, '*');
+            }
         }
-
     }
 }
 
-
-export async function createLogManager() {
-    const manager = new LogManager();
-    await manager.open();
-    return manager;
+export function setLogManager(logManager) {
+    _logManager = logManager;
 }
-
 export function createLogger(name) {
     return new LogCreator(name);
 }

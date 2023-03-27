@@ -1,72 +1,7 @@
 import { createLogger } from "./logger.js";
+import { BrowserWindow, addChild, removeChild } from "./window-manager.js";
 const log = createLogger("Window");
 
-
-/**
- * The variable named globalWindow is the global window object.
- * This makes it obvious when reading code, which window is being used.
- *
- * @type {Window}
- */
-const globalWindow = window;
-
-/**
- * The variable named openerWindow is the window.opener object.
- * 
- * It will be null unless this is a ChildWindow with access to the window
- * it was created from.
- *
- * This makes it obvious when reading code, which window is being used.
- *
- * @type {Window}
- */
-const openerWindow = window;
-
-class BrowserWindow {
-    constructor() {
-        this._window = null;
-        this._callOnClose = null;
-        this._callOnMessage = null;
-    }
-
-    setWindow(w) {
-        this._window = w;
-        this._window.addEventListener('beforeunload',
-            this._onBeforeUnloadHandler.bind(this));
-        this._window.addEventListener('message',
-            this._messageHandler.bind(this));
-        this._dodument = this._window.document;
-        this._dodument = this._window.document?.body;
-    }
-
-
-    getBody() { return this._window?.document?.body; }
-
-    querySelector(selector) {
-        return this._window?.document?.body?.querySelector(selector);
-    }
-
-    setCloseHandler(handler) {
-        this._callOnClose = handler;
-    }
-
-    setMessageHandler(handler) {
-        this._callOnMessage = handler;
-    }
-
-    _onBeforeUnloadHandler(event) {
-        if (this._callOnClose) {
-            this._callOnClose();
-        }
-    }
-
-    _messageHandler(event) {
-        if (this._callOnMessage) {
-            this._callOnMessage(event.data);
-        }
-    }
-
-}
 
 class ChildWindow extends BrowserWindow {
     constructor(name) {
@@ -103,6 +38,11 @@ class ChildWindow extends BrowserWindow {
                 child.document.title = this._name;
                 this.setWindow(child);
                 this._loadScreenPosition();
+                addChild(this);
+                child.addEventListener("onbeforeunload", () => {
+                    removeChild(this);
+                });
+
                 resolve(child);
             }, { once: true }
             );

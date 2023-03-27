@@ -20,13 +20,16 @@
            <label>Rotate <input type='range' name='rotation' min="0" max="360"/></label>
            </div>
            <div>
-            <label>Text <input type='text' name='text'  /></label>
+            <label>Text <input type='text' name='text' value="Developer Relief" placeholder="Enter some text" /></label>
             </div>
         </div>
     </body>
     </html>
     <script type="module">
-        import { createChildWindow } from './child-windows.js';
+        import { getParentWindow } from './parent-window.js';
 
+        const parentWindow = getParentWindow();
+        const status = parentWindow.querySelector('.control-window-status');
+        status.innerHTML = 'Control window running.';
     </script>
 </html>

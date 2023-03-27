@@ -28,15 +28,37 @@
     </head>
 
     <body>
+            <div id="mouse-position"></div>
         <div id="example">
             <div class="draw-text">
-           enter some text
+           Developer Relief
             </div>
         </div>
     </body>
     </html>
     <script type="module">
-        import { createChildWindow } from './child-windows.js';
+            import { getParentWindow } from './parent-window.js';
+            import { createLogger } from './logger.js';
+            const log = createLogger("Draw Window");
+            log.debug("Draw Window loaded");
+            const parentWindow = getParentWindow();
+            const status = parentWindow.querySelector('.draw-window-status');
+            status.innerHTML = 'Drawing window running.';
 
+            const pos = document.getElementById('mouse-position');
+
+            function onMouseMove(event) {
+                const display = `Application mouse move: (${event.clientX},${event.clientY})`;
+                pos.innerText = display;
+            }
+
+            function onMouseLeave(event) {
+                    pos.innerText = "";
+                    log.debug("mouse out");
+                }
+
+            
+                parentWindow.getBody().addEventListener('mousemove', onMouseMove);
+                parentWindow.getBody().addEventListener('mouseout', onMouseLeave);
     </script>
 </html>

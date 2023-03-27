@@ -19,13 +19,16 @@
             <div class="hide">
                 <div>Press stop to close windows</div>
                 <button id="stop">Stop</button>
+                <div class="child-status draw-window-status"></div>
+                <div class="child-status control-window-status"></div>
             </div>
         </div>
     </body>
     </html>
     <script type="module">
         import { createChildWindow } from './child-windows.js';
-        import { createLogger, createLogManager } from './logger.js';
+        import { createLogger } from './logger.js';
+        import {createLogManager } from './log-manager.js';
 
         const logManager = await createLogManager();
         let log = createLogger("Main");
@@ -92,9 +95,11 @@
         });
 
         window.addEventListener('beforeunload', () => {
-               logManager?.close();
-               controlWindow?.close();
-               drawWindow?.close();
+            //    logManager?.close();
+            //    controlWindow?.close();
+            //    drawWindow?.close();
             });
+
+
     </script>
 </html>
