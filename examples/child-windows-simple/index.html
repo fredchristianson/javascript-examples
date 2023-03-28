@@ -66,6 +66,12 @@
                         .addEventListener('input',rotateText);
             body.querySelector(`input[name='text']`)
                         .addEventListener('input', changeText);
+
+            controlWindow.addEventListener('beforeunload',(event)=>{
+                console.log("child closing");
+            });
+            
+
         }
 
 
