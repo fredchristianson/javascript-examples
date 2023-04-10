@@ -14,15 +14,37 @@ class Enum {
     toString() {
         return `Enum(${this._name})`;
     }
+
+    get Value() { return this._name; }
+
+    compare(other) {
+        if (other == null) { return -1; }
+        if (!(other instanceof Enum)) {
+            return -1;
+        }
+        return this._name.localeCompare(other._name);
+    }
 }
 
 class IntEnum extends Enum {
-    constructor(val) {
-        super(`int(${val})`);
-        this.value = val;
+    static of(val = 0) {
+        return new IntEnum(val);
     }
 
-    get Value() { return this.value; }
+    constructor(val) {
+        super(`int(${val})`);
+        this._value = val;
+    }
+
+    get Value() { return this._value; }
+
+    compare(other) {
+        if (other == null) { return -1; }
+        if (!(other instanceof Enum)) {
+            return -1;
+        }
+        return this._value - other._value;
+    }
 }
 
 export { Enum, IntEnum };

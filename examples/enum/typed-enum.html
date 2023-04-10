@@ -13,7 +13,7 @@
     <a href="../index.html">All Examples</a>
 
     <h1>Typed Enum Type in Javascript</h1>
-    <p>View the console log to see and example.</p>
+    <p>View the console log to see an example.</p>
 </body>
 <script type="module">
     import { Enum } from './enum.js';
@@ -25,8 +25,17 @@
     }
 
     class AnotherEnumType extends Enum {
+        static _values = new Map();
+        
+        static valueOf(name) { return AnotherEnumType._values.get(name); }
+
+        static FIRST = new AnotherEnumType("first");
+        static SECOND = new AnotherEnumType("second");
+        static THIRD = new AnotherEnumType("third");
+
         constructor(name) {
             super(name);
+            AnotherEnumType._values.set(name,this);
         }
     }
 
@@ -37,14 +46,9 @@
         THIRD: new MyEnumType("third")
     };
 
-    const ANOTHER_ENUM = {
-        FIRST: new AnotherEnumType("first"),
-        SECOND: new AnotherEnumType("second"),
-        THIRD: new AnotherEnumType("third")
-    };
 
 
-    function isEqualOperator(test,a, b) {
+    function isEqualOperator(test, a, b) {
         if (a === b) {
             console.log(`${test}:  ${a} === ${b}`);
         } else {
@@ -57,22 +61,22 @@
     const valC = MY_ENUM.THIRD;
     const valD = MY_ENUM.FIRST;
 
-    const anotherA = ANOTHER_ENUM.FIRST;
-    const anotherB = ANOTHER_ENUM.SECOND;
-    const anotherC = ANOTHER_ENUM.THIRD;
+    const anotherA = AnotherEnumType.FIRST;
+    const anotherB = AnotherEnumType.SECOND;
+    const anotherC = AnotherEnumType.THIRD;
 
-    isEqualOperator("valA === valA",valA, valA);
-    isEqualOperator("valB === valB",valB, valB);
-    isEqualOperator("valC === valC",valC, valC);
+    isEqualOperator("valA === valA", valA, valA);
+    isEqualOperator("valB === valB", valB, valB);
+    isEqualOperator("valC === valC", valC, valC);
 
-    
-    isEqualOperator("anotherA === anotherA",anotherA, anotherA);
-    isEqualOperator("anotherA === anotherB",anotherA, anotherB);
-    isEqualOperator("anotherA === anotherC",anotherA, anotherC);
 
-        isEqualOperator("valA === anotherA",valA, anotherA);
-        isEqualOperator("valA === anotherB",valA, anotherB);
-        isEqualOperator("valA === anotherC",valA, anotherC);
+    isEqualOperator("anotherA === anotherA", anotherA, anotherA);
+    isEqualOperator("anotherA === anotherB", anotherA, anotherB);
+    isEqualOperator("anotherA === anotherC", anotherA, anotherC);
+
+    isEqualOperator("valA === anotherA", valA, anotherA);
+    isEqualOperator("valA === anotherB", valA, anotherB);
+    isEqualOperator("valA === anotherC", valA, anotherC);
 
 
     if (valA instanceof Enum) {
@@ -81,36 +85,42 @@
         console.log("valA is not an Enum");
     }
 
-        if (valA instanceof MyEnumType) {
-            console.log("valA is an MyEnumType");
-        } else {
-            console.log("valA is not an MyEnumType");
-        }
+    if (valA instanceof MyEnumType) {
+        console.log("valA is an MyEnumType");
+    } else {
+        console.log("valA is not an MyEnumType");
+    }
 
-            if (valA instanceof AnotherEnumType) {
-                console.log("valA is an AnotherEnumType");
-            } else {
-                console.log("valA is not an AnotherEnumType");
-            }
+    if (valA instanceof AnotherEnumType) {
+        console.log("valA is an AnotherEnumType");
+    } else {
+        console.log("valA is not an AnotherEnumType");
+    }
 
 
-        if (anotherA instanceof Enum) {
-            console.log("anotherA is an Enum");
-        } else {
-            console.log("anotherA is not an Enum");
-        }
+    if (anotherA instanceof Enum) {
+        console.log("anotherA is an Enum");
+    } else {
+        console.log("anotherA is not an Enum");
+    }
 
-        if (anotherA instanceof MyEnumType) {
-            console.log("anotherA is an MyEnumType");
-        } else {
-            console.log("anotherA is not an MyEnumType");
-        }
+    if (anotherA instanceof MyEnumType) {
+        console.log("anotherA is an MyEnumType");
+    } else {
+        console.log("anotherA is not an MyEnumType");
+    }
 
-        if (anotherA instanceof AnotherEnumType) {
-            console.log("anotherA is an AnotherEnumType");
-        } else {
-            console.log("anotherA is not an AnotherEnumType");
-        }
+    if (anotherA instanceof AnotherEnumType) {
+        console.log("anotherA is an AnotherEnumType");
+    } else {
+        console.log("anotherA is not an AnotherEnumType");
+    }
+
+    const valueOfThird = AnotherEnumType.valueOf("third");
+    console.log(`valueof('third') = ${valueOfThird}`);
+
+
+
 
 </script>
 

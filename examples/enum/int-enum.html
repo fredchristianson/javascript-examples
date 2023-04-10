@@ -12,15 +12,15 @@
 <body>
     <a href="../index.html">All Examples</a>
     <h1>Integer Enum Type in Javascript</h1>
-    <p>View the console log to see and example.</p>
+    <p>View the console log to see an example.</p>
 </body>
 <script type="module">
     import { IntEnum } from './enum.js';
 
     const MY_INT_ENUM = {
         FIRST: new IntEnum(1),
-        SECOND: new IntEnum(2),
-        THIRD: new IntEnum(1)
+        SECOND: IntEnum.of(2),
+        THIRD: IntEnum.of(1)
     }
 
 
@@ -76,22 +76,23 @@
     }
 
     class MyFlagEnum extends IntEnum {
+        static FIRST = new IntEnum(0x0001);
+        static SECOND = new IntEnum(0x0002);
+        static THIRD = new IntEnum(0x0004);
+        static FOURTH = new IntEnum(0x0001);
+
         constructor(val) {
             super(val);
         }
     }
 
-    const MY_FLAG_ENUM = {
-        FIRST: new IntEnum(0x0001),
-        SECOND: new IntEnum(0x0002),
-        THIRD: new IntEnum(0x0004),
-        FOURTH: new IntEnum(0x0001)
-    }
 
-    const flagA = MY_FLAG_ENUM.FIRST;
-    const flagB = MY_FLAG_ENUM.SECOND;
-    const flagC = MY_FLAG_ENUM.THIRD;
-    const flagD = MY_FLAG_ENUM.FOURTH;  // same value as flagA but different enum
+    const flagA = MyFlagEnum.FIRST;
+    const flagB = MyFlagEnum.SECOND;
+    const flagC = MyFlagEnum.THIRD;
+    const flagD = MyFlagEnum.FOURTH;  // same value as flagA but different enum
+
+    console.log(`Flags: ${Object.keys(MyFlagEnum)}`);
 
     isEqualFunction("flagA.equal(flagA)", flagA, flagA);
     isEqualFunction("flagA.equal(flagB)", flagA, flagB);
@@ -106,6 +107,32 @@
     console.log(`flagA | flagB: ${flagA.Value | flagB.Value}`);
     console.log(`flagC | flagB: ${flagC.Value | flagB.Value}`);
     console.log(`flagD | flagB: ${flagD.Value | flagB.Value}`);
+
+
+    class Day extends IntEnum {
+        static MONDAY = new Day("Monday", 0x0001);
+        static TUESDAY = new Day("Tuesday", 0x0002);
+        static WEDNESDAY = new Day("Wednesday", 0x0004);
+        static THURSDAY = new Day("Thursday", 0x0008);
+        static FRIDAY = new Day("FRIDAY", 0x0010);
+        static SATURDAY = new Day("SATURDAY", 0x0020);
+        static SUNDAY = new Day("SUNDAY", 0x0040);
+
+        constructor(dayName, flag) {
+            super(flag);
+            this._day = dayName;
+        }
+    };
+
+    let weekend = Day.SUNDAY.Value || Day.SATURDAY.Value;
+    let eventDayA = Day.SUNDAY;
+    let eventDayB = Day.MONDAY;
+    if (eventDayA.Value & weekend) {
+        console.log("eventA is on the weekend");
+    }
+    if (eventDayB.Value & weekend) {
+        console.log("eventB is on the weekend");
+    }
 </script>
 
 </html>
