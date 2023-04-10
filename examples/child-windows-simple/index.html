@@ -4,7 +4,7 @@
         <link rel="stylesheet" href="./style.css" />
     <style>
     #example {
-        padding: 4em;
+        padding: 1em;
     }
 
     </style>
@@ -81,9 +81,9 @@
         // create an event listener for the control window's "load".
         // after it is loaded, we can attach event listeners to elements in it.
         async function openWindows() {
-            controlWindow = window.open('control.html', 'Control', "top=100,left=0,width=400,height=400");
+            controlWindow = window.open('control.html', 'Control', "top=500,left=0,width=400,height=200");
             controlWindow.addEventListener('load',createControlListeners);
-            drawWindow = window.open('draw.html', 'Draw', "top=600,left=500,width=400,height=400");
+            drawWindow = window.open('draw.html', 'Draw', "top=800,left=0,width=400,height=200");
 
         }
 

@@ -1,0 +1,77 @@
+<html>
+
+<head>
+    <style>
+        label {
+            display: inline-block;
+            width: 10em;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="../index.html">All Examples</a>
+    <h1>Enum Type in Javascript</h1>
+    <p>View the console log to see and example.</p>
+</body>
+<script type="module">
+    import { Enum } from './enum.js';
+
+    const MY_ENUM = {
+        FIRST: new Enum("first"),
+        SECOND: new Enum("second"),
+        THIRD: new Enum("first")
+    }
+
+    function isEqualFunction(a, b) {
+        if (a.equals(b)) {
+            console.log(`${a} == ${b}`);
+        } else {
+            console.log(`${a} != ${b}`);
+        }
+    }
+
+    function isEqualOperator(a, b) {
+        if (a == b) {
+            console.log(`${a} == ${b}`);
+        } else {
+            console.log(`${a} != ${b}`);
+        }
+    }
+
+        function isTripleEqualOperator(a, b) {
+                if (a === b) {
+                    console.log(`${a} === ${b}`);
+                } else {
+                    console.log(`${a} != ${b}`);
+                }
+            }
+
+    const valA = MY_ENUM.FIRST;
+    const valB = MY_ENUM.SECOND;
+    const valC = MY_ENUM.THIRD;
+    const valD = MY_ENUM.FIRST;
+
+    isEqualFunction(valA, valA);
+    isEqualFunction(valA, valB);
+    isEqualFunction(valA, valC);
+    isEqualFunction(valA, valD);
+
+        isTripleEqualOperator(valA, valA);
+            isTripleEqualOperator(valA, valB);
+            isTripleEqualOperator(valA, valC);
+            isTripleEqualOperator(valA, valD);
+
+    isEqualOperator(valA, valA);
+    isEqualOperator(valA, valB);
+    isEqualOperator(valA, valC);
+    isEqualOperator(valA, valD);
+
+    if (valA instanceof Enum) {
+        console.log("valA is an Enum");
+    } else {
+        console.log("valA is not an Enum");
+    }
+</script>
+
+</html>
