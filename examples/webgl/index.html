@@ -1,0 +1,48 @@
+<html>
+
+<head>
+    <style>
+        label {
+            display: inline-block;
+            width: 10em;
+        }
+
+        canvas {
+            width: 500px;
+            height: 500px;
+            margin-top: 2em;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="../index.html">All Examples</a>
+    <h1>WebGL</h1>
+    <canvas id="webgl" width="1000" height="1000"></canvas>
+
+</body>
+<script type="module">
+    import { Logger } from "../common/log/logger.js";
+    import {PointShader, SolidColorShader, Program} from './webgl/webgl.js';
+            const log = new Logger("WebGL App");
+   const canvas = document.getElementById('webgl');
+   const gl= canvas.getContext("webgl");
+
+   const point= PointShader.create();
+   const color = SolidColorShader.create();
+   const program = Program.create(gl,point,color);
+
+   point.setPosition(0,0,0);
+    point.setSize(10);
+    color.setColor(0,1,0,1);
+
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+    // Render
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.POINTS, 0, 1);
+
+  
+</script>
+
+</html>

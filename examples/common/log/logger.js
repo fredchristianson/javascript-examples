@@ -4,6 +4,9 @@ import { DEFAULT_LOG_LEVEL, LogLevel, LogMessage } from "./common.js";
 export { DEFAULT_LOG_LEVEL, LogLevel, LogMessage } from "./common.js";
 
 export class Logger {
+  static create(name = 'unnamed', level = DEFAULT_LOG_LEVEL) {
+    return new Logger(name, level);
+  }
   constructor(name, level = DEFAULT_LOG_LEVEL) {
     this.name = name;
     this.level = level;
