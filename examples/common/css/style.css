@@ -25,3 +25,7 @@ pre {
     margin-left: 2rem;
 }
 
+.log.ERROR {
+    color: red;
+    background-color: white;
+}

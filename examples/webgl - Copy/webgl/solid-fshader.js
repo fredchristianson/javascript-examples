@@ -24,7 +24,8 @@ class SolidColorShader extends FragmentShader {
         });
     }
 
-    _setupAttributes(gl, program) {
+
+    _setupUniforms(gl, program) {
         this.#colorLocation = gl.getUniformLocation(program, "color");
     }
 }

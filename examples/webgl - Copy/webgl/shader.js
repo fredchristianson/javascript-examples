@@ -1,4 +1,4 @@
-import { VertexShader } from "./vertex-shader.js";
+
 
 class Shader {
     #code = null;
@@ -16,7 +16,7 @@ class Shader {
         this.#program = program;
         this.#glProgram = program.getGlProgram();
 
-        this.#glShader = gl.createShader(this._getType());
+        this.#glShader = gl.createShader(this._getType(gl));
         gl.shaderSource(this.#glShader, this.#code);
         gl.compileShader(this.#glShader);
         gl.attachShader(program.getGlProgram(), this.#glShader);
@@ -32,10 +32,6 @@ class Shader {
 
     withGl(func) { func(this.#gl); }
     _getType() {
-        if (this instanceof VertexShader) {
-            return this.#gl.VERTEX_SHADER;
-        }
-        return this.#gl.FRAGMENT_SHADER;
     }
 }
 

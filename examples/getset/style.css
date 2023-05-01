@@ -1,0 +1,10 @@
+label {
+    display: inline-block;
+    width: 10em;
+}
+
+canvas {
+    width: 500px;
+    height: 500px;
+    margin-top: 2em;
+}

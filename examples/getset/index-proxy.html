@@ -1,0 +1,118 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="../common/css/style.css" />
+    <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+    <a href="../index.html">All Examples</a>
+    <h1>Getters & Setters - Proxy workaround</h1>
+    <div id="LOG-CONTAINER">
+
+    </div>
+
+
+</body>
+<script type="module">
+    import { Logger } from "../common/log/logger.js";
+    const log = new Logger("FreezeGetSet");
+
+
+      class SafeGetSetProxy {
+            #privateData = null;
+            constructor(val = null) {
+                this.#privateData = val;
+                Object.freeze(this);
+                return this.createProxy();
+            }
+
+            createProxy() {
+                const handler = {
+                    get(target, prop, receiver) {
+                        if (target[prop] !== undefined) {
+                            return target[prop];
+                        }
+                        log.error(`unknown property ${prop}`);
+                        throw Error(`unknown property ${prop}`);
+                    },
+
+                    set(target, prop, value, receiver) {
+                        if (target[prop] !== undefined) {
+                            return target[prop] = value;
+                        } else {
+                            log.error(`unknown property ${prop}`);
+                            throw Error(`unknown property ${prop}`);
+                        }
+                    }
+
+
+                }
+                return new Proxy(this.#privateData, handler);
+            }
+
+        }
+
+        class Test {
+            #val = null;
+            constructor(val = null) {
+                this.#val = val;
+                return new SafeGetSetProxy(this);
+            }
+
+            set val(v) { this.#val = v; }
+            get val() { return this.#val; }
+
+        }
+
+
+  
+
+    function freezeCorrectSetter(object) {
+        object.val = 1;
+        log.debug("object.val should be 1", object.val);
+    }
+
+    function freezeCorrectGetter(object) {
+        log.debug("object.val should be 5", object.val);
+    }
+
+    function freezeDangerSetter(object) {
+        try {
+            // bug to use "value" instead of "val"
+            object.value = 1;
+            log.error("object.val should be 1", object.val);
+        } catch (ex) {
+            log.error("trying to set with the wrong name ", ex);
+        }
+    }
+
+    function freezeDangerGetter(object) {
+        try {
+            log.error("object.val should be 1", object.value);
+        } catch (ex) {
+            log.error("trying to get with the wrong name ", ex);
+        }
+    }
+
+    function otherMethod(object) {
+        object.otherMethod();
+    }
+
+    let freezeTest = new Test();
+    freezeCorrectSetter(freezeTest);
+    freezeTest = new Test(5);
+    freezeCorrectGetter(freezeTest);
+    freezeTest = new Test(5);
+    freezeDangerSetter(freezeTest);
+    freezeTest = new Test(5);
+    freezeDangerGetter(freezeTest);
+    otherMethod(freezeTest);
+
+
+
+
+
+</script>
+
+</html>

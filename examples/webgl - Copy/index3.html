@@ -1,0 +1,58 @@
+<html>
+
+<head>
+    <style>
+        label {
+            display: inline-block;
+            width: 10em;
+        }
+
+        canvas {
+            width: 500px;
+            height: 500px;
+            margin-top: 2em;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="../index.html">All Examples</a>
+    <h1>WebGL</h1>
+    <canvas id="webgl" width="1000" height="1000"></canvas>
+
+</body>
+<script type="module">
+    import { Logger } from "../common/log/logger.js";
+    import { VertexColorShader, ColorShader, Program } from './webgl/webgl.js';
+    const log = new Logger("WebGL App");
+    const canvas = document.getElementById('webgl');
+    const gl = canvas.getContext("webgl");
+
+    const color = ColorShader.create();
+    const point = VertexColorShader.create();
+    const program = Program.create(gl, point, color);
+
+    var vertices = new Float32Array([
+        0, 0.5, 0, // point 1
+        -0.5, -0.5, 0, // point 2
+        0.5, -0.5, 0  // point 3
+    ]);
+
+    var colors = new Float32Array([
+        1, 0, 0, 1,
+        0, 1, 0, 1,
+        0, 0, 1, 0.5]);
+
+    point.setPoints3f(vertices);
+    point.setColors4f(colors);
+
+    gl.clearColor(0.0, 1.0, 0.0, 1.0);
+
+    // Render
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+
+</script>
+
+</html>

@@ -1,0 +1,72 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="../common/css/style.css" />
+    <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+    <a href="../index.html">All Examples</a>
+    <h1>Getters & Setters</h1>
+    <div id="LOG-CONTAINER">
+
+    </div>
+
+
+</body>
+<script type="module">
+    import { Logger } from "../common/log/logger.js";
+    const log = new Logger("GetSet");
+
+    /*
+    * a simple class with getter and setter for private field "val"
+    */
+    class Test {
+        #val = null;
+        constructor(val = null) {
+            this.#val = val;
+        }
+
+        set val(v) { this.#val = v; }
+        get val() { return this.#val; }
+    }
+
+
+    function correctSetter(object) {
+        object.val = 7;
+        log.debug("object.val should be 7", object.val);
+    }
+
+    function correctGetter(object) {
+        log.debug("object.val should be 12", object.val);
+    }
+
+    function dangerSetter(object) {
+        // bug to use "value" instead of the setter name "val"
+        object.value = 1;
+        log.error("object.val should be 1", object.val);
+    }
+
+    function dangerGetter(object) {
+        log.error("object.val should be 8", object.value);
+    }
+
+
+
+    let test = new Test(10);
+    correctSetter(test);
+
+    test = new Test(12);
+    correctGetter(test);
+    test = new Test(5);
+    dangerSetter(test);
+
+    test = new Test(8);
+    dangerGetter(test);
+
+
+
+
+</script>
+
+</html>

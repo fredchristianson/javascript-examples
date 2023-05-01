@@ -28,7 +28,8 @@
    const canvas = document.getElementById('webgl');
    const gl= canvas.getContext("webgl");
 
-
+   const point= PointShader.create();
+   const color = SolidColorShader.create();
    const program = Program.create(gl,point,color);
 
    var vertices = new Float32Array([
