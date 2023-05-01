@@ -19,54 +19,47 @@
     const log = new Logger("FreezeGetSet");
 
 
-      class SafeGetSetProxy {
-            #privateData = null;
-            constructor(val = null) {
-                this.#privateData = val;
-                Object.freeze(this);
-                return this.createProxy();
-            }
+    class SafeGetSetProxy {
+        static create(object) {
+            return new Proxy(object, SafeGetSetProxy.handler);
+        }
 
-            createProxy() {
-                const handler = {
-                    get(target, prop, receiver) {
-                        if (target[prop] !== undefined) {
-                            return target[prop];
-                        }
-                        log.error(`unknown property ${prop}`);
-                        throw Error(`unknown property ${prop}`);
-                    },
-
-                    set(target, prop, value, receiver) {
-                        if (target[prop] !== undefined) {
-                            return target[prop] = value;
-                        } else {
-                            log.error(`unknown property ${prop}`);
-                            throw Error(`unknown property ${prop}`);
-                        }
-                    }
-
-
+        static handler = {
+            get(target, prop, receiver) {
+                if (target[prop] !== undefined) {
+                    return target[prop];
                 }
-                return new Proxy(this.#privateData, handler);
+                log.error(`unknown property ${prop}`);
+                throw Error(`unknown property ${prop}`);
+            },
+
+            set(target, prop, value, receiver) {
+                if (target[prop] !== undefined) {
+                    return target[prop] = value;
+                } else {
+                    log.error(`unknown property ${prop}`);
+                    throw Error(`unknown property ${prop}`);
+                }
             }
 
         }
 
-        class Test {
-            #val = null;
-            constructor(val = null) {
-                this.#val = val;
-                return new SafeGetSetProxy(this);
-            }
+    }
 
-            set val(v) { this.#val = v; }
-            get val() { return this.#val; }
-
+    class Test {
+        #val = null;
+        constructor(val = null) {
+            this.#val = val;
+            return SafeGetSetProxy.create(this);
         }
 
+        set val(v) { this.#val = v; }
+        get val() { return this.#val; }
 
-  
+    }
+
+
+
 
     function freezeCorrectSetter(object) {
         object.val = 1;
